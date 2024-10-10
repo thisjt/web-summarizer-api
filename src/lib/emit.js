@@ -15,10 +15,10 @@ export default function emit(data) {
 	if (LOGLEVEL !== 'debug') delete data.debug;
 
 	if (data.errors) {
-		return { success: false, errors: data.errors };
+		return { error: true, errors: data.errors };
 	} else if (data.zodErrors) {
-		return { success: false, errors: data.zodErrors.error.flatten().fieldErrors };
+		return { error: true, errors: data.zodErrors.error.flatten().fieldErrors };
 	} else {
-		return { ...data, success: true };
+		return { ...data, error: false };
 	}
 }
