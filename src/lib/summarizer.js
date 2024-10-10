@@ -31,13 +31,13 @@ export class Summarizer {
 		await this.pending();
 
 		const scrapeData = await this.scrape();
-		if (scrapeData.error || !scrapeData.data) return await this.fail();
+		if (scrapeData.error || !scrapeData.data) return await this.fail('Failed to scrape web page');
 
 		const clean = this.cleanup(scrapeData.data);
-		if (clean.error || !clean.data) return await this.fail();
+		if (clean.error || !clean.data) return await this.fail('Data is too short to be summarized');
 
 		const summary = await this.summarize(clean.data);
-		if (summary.error || !summary.data) return await this.fail();
+		if (summary.error || !summary.data) return await this.fail('Unable to summarize web page');
 
 		this.save(summary.data);
 	}
@@ -168,8 +168,11 @@ export class Summarizer {
 		}
 	}
 
-	/**@param {string} [lastline] */
-	async fail(lastline) {
+	/**
+	 * @param {string} errmessage
+	 * @param {string} [lastline]
+	 */
+	async fail(errmessage, lastline) {
 		try {
 			if (lastline) this.logger(lastline);
 
@@ -177,7 +180,7 @@ export class Summarizer {
 				data: {
 					status: 'failed',
 					summary_logs: this.logs,
-					summary_error_message: '',
+					summary_error_message: errmessage,
 					finished: new Date().getTime(),
 				},
 				where: {
