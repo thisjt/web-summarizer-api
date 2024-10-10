@@ -80,6 +80,7 @@ export class Summarizer {
 	/**@param {string} paragraph */
 	async summarize(paragraph) {
 		try {
+			this.logger('Calling HF API for summarization');
 			const response = await fetch(INFERENCE_API, {
 				headers: {
 					Authorization: `Bearer ${HFTOKEN}`,
@@ -91,8 +92,13 @@ export class Summarizer {
 			/**@type {{summary_text:string | null}[] | null} */
 			const data = await response.json();
 
-			if (data?.[0].summary_text) return { error: false, data: data[0].summary_text };
-			return { error: true };
+			if (data?.[0].summary_text) {
+				return { error: false, data: data[0].summary_text };
+			} else {
+				this.logger('Unable to grab summary_text');
+				this.logger(JSON.stringify(data));
+				return { error: true };
+			}
 		} catch (e) {
 			this.logger('Failed to summarize paragraph');
 			this.logger(JSON.stringify(e));
