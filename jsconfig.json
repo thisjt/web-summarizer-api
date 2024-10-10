@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "es2016",
+		"module": "ESNext",
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"moduleResolution": "Bundler",
+		"paths": {
+			"$src/*": ["./src/*"],
+			"$root/*": ["./*"]
+		}
+	}
+}
