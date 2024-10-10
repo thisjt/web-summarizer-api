@@ -19,4 +19,5 @@ model Jobs {
     summary_error         Boolean?
     summary_error_message String?
     timestamp             BigInt
+    finished              BigInt?
 }
