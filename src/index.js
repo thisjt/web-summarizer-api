@@ -1,10 +1,14 @@
-import express from 'express';
+import { app, port } from './lib/express';
+import getJob from './routes/job/getJob';
+import getJobs from './routes/job/getJobs';
+import postJob from './routes/job/postJob';
 
-const app = express();
-const port = 5013;
+const routes = [getJob, getJobs, postJob];
 
-app.get('/', (request, response) => {
-	response.send('Hi');
+routes.forEach((route) => route());
+
+app.all('*', (request, response) => {
+	response.status(404).json({ error: true, message: 'Path does not exist.' });
 });
 
 app.listen(port, () => {
