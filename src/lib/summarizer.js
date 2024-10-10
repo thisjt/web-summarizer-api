@@ -122,11 +122,12 @@ export class Summarizer {
 			/**@type {{summary_text:string | null}[] | null} */
 			const data = await response.json();
 
-			if (data?.[0].summary_text) {
+			if (data?.[0]?.summary_text) {
 				return { error: false, data: data[0].summary_text, truncatedParagraph };
 			} else {
 				this.logger('Unable to grab summary_text');
 				this.logger(JSON.stringify(data));
+				log(truncatedParagraph);
 				return { error: true };
 			}
 		} catch (e) {
