@@ -17,13 +17,15 @@ export default function postJob() {
 			return;
 		}
 
+		const timestamp = new Date().getTime();
+
 		let result;
 		try {
 			result = await prisma.jobs.create({
 				data: {
 					url: parseResult.data.url,
 					status: 'queue',
-					timestamp: new Date().getTime(),
+					timestamp,
 				},
 				select: {
 					id: true,
@@ -39,6 +41,6 @@ export default function postJob() {
 			return;
 		}
 
-		response.json(emit({ id: result.id, url: parseResult.data.url, status: 'queue' }));
+		response.json(emit({ id: result.id, url: parseResult.data.url, status: 'queue', timestamp }));
 	});
 }
