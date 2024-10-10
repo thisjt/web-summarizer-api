@@ -25,7 +25,6 @@ export default function getJob() {
 					url: true,
 					status: true,
 					summary: true,
-					summary_error: true,
 					summary_error_message: true,
 					timestamp: true,
 				},
