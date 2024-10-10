@@ -6,9 +6,7 @@ export class Summarizer {
 	 */
 	constructor(id, url) {
 		this.url = url;
-		this.logger('Starting job id', id);
-
-		this.init();
+		this.id = id;
 	}
 	url = '';
 	logs = '';
@@ -17,7 +15,8 @@ export class Summarizer {
 		this.logs += `${text.join(' ')}\n`;
 	}
 
-	async init() {
+	async run() {
+		this.logger('Starting job id', this.id);
 		await this.scrape();
 	}
 
