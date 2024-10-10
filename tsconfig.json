@@ -11,8 +11,8 @@
 		"skipLibCheck": true,
 		"moduleResolution": "Bundler",
 		"paths": {
-			"$src/*": ["./src/*"],
-			"$root/*": ["./*"]
+			// I'm kind of used to sveltekit's $lib alias, so im reusing it here
+			"$lib/*": ["./src/lib/*"]
 		}
 	}
 }
