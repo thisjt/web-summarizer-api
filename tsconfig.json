@@ -1,18 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "es2016",
-		"module": "ESNext",
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"moduleResolution": "Bundler",
 		"paths": {
 			// I'm kind of used to sveltekit's $lib alias, so im reusing it here
 			"$lib/*": ["./src/lib/*"]
 		}
-	}
+	},
+	"files": [],
+	"references": [{ "path": "./jsconfig.json" }]
 }
