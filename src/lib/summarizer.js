@@ -72,15 +72,16 @@ export class Summarizer {
 			const bodyHandle = await page.$('body');
 			this.logger('Grabbing page body');
 			const html = await page.evaluate((body) => {
-				['script', 'iframe', 'style', 'img', 'header', 'footer', 'form', 'link', 'svg'].forEach((elem) => {
-					const elements = body?.querySelectorAll(elem);
-					elements?.forEach((element) => element.remove());
+				let pData = '';
+				[...(body?.querySelectorAll('p') || [])].forEach((p) => {
+					pData += p.textContent + ' ';
 				});
-				return body?.textContent;
+				return pData;
 			}, bodyHandle);
+			const htmlRemovedTags = html.replace(/<\/?[^>]+(>|$)/g, '');
 			this.logger('Closing browser');
 			await browser.close();
-			return { error: false, data: html };
+			return { error: false, data: htmlRemovedTags };
 		} catch (e) {
 			this.logger('Failed to scrape page');
 			this.logger(JSON.stringify(e));
@@ -127,7 +128,7 @@ export class Summarizer {
 			} else {
 				this.logger('Unable to grab summary_text');
 				this.logger(JSON.stringify(data));
-				log(truncatedParagraph);
+				// log(truncatedParagraph);
 				return { error: true };
 			}
 		} catch (e) {
