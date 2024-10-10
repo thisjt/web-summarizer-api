@@ -1,7 +1,8 @@
 {
 	"name": "web-summarizer-api",
 	"scripts": {
-		"dev": "node ."
+		"dev": "node .",
+		"lint": "prettier --check . && eslint ."
 	},
 	"main": "./src/index.js",
 	"type": "module",
