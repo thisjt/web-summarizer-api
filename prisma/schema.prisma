@@ -1,0 +1,21 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["omitApi"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./jobs.db"
+}
+
+model Jobs {
+    id            Int      @id @default(autoincrement())
+    url           String
+    // apparently sqlite does not support enums
+    // status: [queue, processing, completed, failed]
+    status        String
+    summary       String?
+    timestamp     BigInt
+    error         Boolean?
+    error_message String?
+}
