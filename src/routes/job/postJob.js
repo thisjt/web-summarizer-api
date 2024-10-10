@@ -13,7 +13,7 @@ export default function postJob() {
 		const parseResult = jobPost.safeParse(request.body);
 
 		if (parseResult.error) {
-			response.status(StatusCodes.BAD_REQUEST).json(emit({ errors: parseResult }));
+			response.status(StatusCodes.BAD_REQUEST).json(emit({ zodErrors: parseResult }));
 			return;
 		}
 
