@@ -2,7 +2,8 @@
 	"name": "web-summarizer-api",
 	"scripts": {
 		"dev": "tsx watch src/index.js",
-		"lint": "prettier --check . && eslint ."
+		"lint": "prettier --check . && eslint .",
+		"generate": "prisma generate"
 	},
 	"main": "./src/index.js",
 	"type": "module",
