@@ -26,6 +26,8 @@ export class Summarizer {
 	async run() {
 		this.logger('Starting job id', this.id);
 
+		await this.pending();
+
 		const scrapeData = await this.scrape();
 		if (scrapeData.error || !scrapeData.data) return await this.fail();
 
@@ -36,6 +38,19 @@ export class Summarizer {
 		if (summary.error || !summary.data) return await this.fail();
 
 		this.save(summary.data);
+	}
+
+	async pending() {
+		try {
+			prisma.jobs.update({
+				data: {
+					status: 'processing',
+				},
+				where: { id: this.id },
+			});
+		} catch (e) {
+			console.log('Error', e);
+		}
 	}
 
 	/**@param {string} [url] */
