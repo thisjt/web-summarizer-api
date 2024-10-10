@@ -1,0 +1,10 @@
+{
+	"name": "web-summarizer-api",
+	"scripts": {
+		"dev": ""
+	},
+	"type": "module",
+	"dependencies": {
+		"express": "^4.21.1"
+	}
+}
