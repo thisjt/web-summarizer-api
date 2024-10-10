@@ -5,7 +5,7 @@ import { z } from 'zod';
 import prisma from '$lib/prisma';
 
 const jobPost = z.object({
-	url: z.string({ message: 'URL is missing. Expecting { url : "http(s)://..." }.' }).url({ message: 'URL is invalid.' }),
+	url: z.string({ message: 'URL is missing. Expecting { url : "http(s)://..." }.' }).url({ message: 'URL is invalid. Expecting "http(s)://...".' }),
 });
 
 export default function postJob() {
