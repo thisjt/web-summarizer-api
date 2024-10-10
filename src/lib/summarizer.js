@@ -32,7 +32,7 @@ export class Summarizer {
 		const clean = this.cleanup(scrapeData.data);
 		if (clean.error || !clean.data) return await this.fail();
 
-		const summary = this.summarize(clean.data);
+		const summary = await this.summarize(clean.data);
 		return summary;
 	}
 
@@ -52,7 +52,13 @@ export class Summarizer {
 			await page.waitForFunction('window.performance.timing.loadEventEnd - window.performance.timing.navigationStart >= 500');
 			const bodyHandle = await page.$('body');
 			this.logger('Grabbing page body');
-			const html = await page.evaluate((body) => body?.textContent, bodyHandle);
+			const html = await page.evaluate((body) => {
+				['script', 'iframe', 'style', 'img', 'header', 'footer', 'form', 'link', 'svg'].forEach((elem) => {
+					const elements = body?.querySelectorAll(elem);
+					elements?.forEach((element) => element.remove());
+				});
+				return body?.textContent;
+			}, bodyHandle);
 			this.logger('Closing browser');
 			await browser.close();
 			return { error: false, data: html };
@@ -69,7 +75,7 @@ export class Summarizer {
 			.split('\n')
 			.map((line) => line.replace(/\s+/g, ' ').trim())
 			.join('\n');
-		const htmlSplitNewLine = htmlTrimmedSpaces.split('\n\n\n');
+		const htmlSplitNewLine = htmlTrimmedSpaces.split('\n');
 		htmlSplitNewLine.forEach((v, i) => (htmlSplitNewLine[i] = htmlSplitNewLine[i].trim()));
 		const htmlFilterShortStrings = htmlSplitNewLine.filter((str) => str.length > SHORT_PARAGRAPH);
 		const htmlParagraph = htmlFilterShortStrings.join(' ');
@@ -79,6 +85,9 @@ export class Summarizer {
 
 	/**@param {string} paragraph */
 	async summarize(paragraph) {
+		// I had issues with being rate limited due to pushing too much data to HF
+		const truncatedParagraph = paragraph.slice(0, 5000);
+
 		try {
 			this.logger('Calling HF API for summarization');
 			const response = await fetch(INFERENCE_API, {
@@ -87,13 +96,15 @@ export class Summarizer {
 					'Content-Type': 'application/json',
 				},
 				method: 'POST',
-				body: JSON.stringify({ inputs: paragraph }),
+				body: JSON.stringify({
+					inputs: truncatedParagraph,
+				}),
 			});
 			/**@type {{summary_text:string | null}[] | null} */
 			const data = await response.json();
 
 			if (data?.[0].summary_text) {
-				return { error: false, data: data[0].summary_text };
+				return { error: false, data: data[0].summary_text, truncatedParagraph };
 			} else {
 				this.logger('Unable to grab summary_text');
 				this.logger(JSON.stringify(data));
