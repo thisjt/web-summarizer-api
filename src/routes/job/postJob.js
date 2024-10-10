@@ -3,6 +3,7 @@ import { app } from '$lib/express';
 import { StatusCodes } from 'http-status-codes';
 import { z } from 'zod';
 import prisma from '$lib/prisma';
+import { Summarizer } from '$lib/summarizer';
 
 const jobPost = z.object({
 	url: z.string({ message: 'URL is missing. Expecting { url : "http(s)://..." }.' }).url({ message: 'URL is invalid. Expecting "http(s)://...".' }),
@@ -42,5 +43,8 @@ export default function postJob() {
 		}
 
 		response.json(emit({ id: result.id, url: parseResult.data.url, status: 'queue', timestamp }));
+
+		const summarize = new Summarizer(result.id, parseResult.data.url);
+		summarize.run();
 	});
 }
