@@ -5,7 +5,8 @@
 		"lint": "prettier --check . && eslint .",
 		"generate": "prisma generate",
 		"dbsync": "prisma db push",
-		"dbrefresh": "prisma db push --force-reset"
+		"dbrefresh": "prisma db push --force-reset",
+		"studio": "prisma studio"
 	},
 	"main": "./src/index.js",
 	"type": "module",
