@@ -44,7 +44,7 @@ export class Summarizer {
 
 	async pending() {
 		try {
-			prisma.jobs.update({
+			await prisma.jobs.update({
 				data: {
 					status: 'processing',
 				},
