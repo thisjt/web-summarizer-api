@@ -2,9 +2,8 @@ import 'dotenv/config';
 import { app, port } from './lib/express';
 import getJob from './routes/job/getJob';
 import postJob from './routes/job/postJob';
-import runJob from './routes/job/runJob';
 
-const routes = [getJob, postJob, runJob];
+const routes = [getJob, postJob];
 
 routes.forEach((route) => route());
 
