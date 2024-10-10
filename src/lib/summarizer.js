@@ -33,7 +33,9 @@ export class Summarizer {
 		if (clean.error || !clean.data) return await this.fail();
 
 		const summary = await this.summarize(clean.data);
-		return summary;
+		if (summary.error || !summary.data) return await this.fail();
+
+		this.save(summary.data);
 	}
 
 	/**@param {string} [url] */
@@ -117,7 +119,37 @@ export class Summarizer {
 		}
 	}
 
-	async save() {}
+	/**@param {string} summary */
+	async save(summary) {
+		try {
+			const result = await prisma.jobs.update({
+				data: {
+					status: 'completed',
+					summary,
+					summary_logs: this.logs,
+					finished: new Date().getTime(),
+				},
+				where: {
+					id: this.id,
+				},
+				select: {
+					id: true,
+					url: true,
+					status: true,
+					summary: true,
+					summary_error: true,
+					summary_error_message: true,
+					timestamp: true,
+				},
+			});
+
+			return { error: false, data: { ...result, timestamp: Number(result.timestamp) } };
+		} catch (e) {
+			this.logger('Failed to save summary to db');
+			this.logger(JSON.stringify(e));
+			return { error: true };
+		}
+	}
 
 	/**@param {string} [lastline] */
 	async fail(lastline) {
