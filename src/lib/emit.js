@@ -7,7 +7,7 @@ const LOGLEVEL = 'debug';
  * @param {SafeParseError | Object<string, string[]>} [data.errors]
  * @param {number} [data.id]
  * @param {string} [data.url]
- * @param {"queue" | "processing" | "completed" | "failed"} [data.status]
+ * @param {"queue" | "processing" | "completed" | "failed" | string} [data.status]
  * @param {*} [data.debug]
  */
 export default function emit(data) {
