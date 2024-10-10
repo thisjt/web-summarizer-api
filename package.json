@@ -3,7 +3,9 @@
 	"scripts": {
 		"dev": "tsx watch src/index.js",
 		"lint": "prettier --check . && eslint .",
-		"generate": "prisma generate"
+		"generate": "prisma generate",
+		"dbsync": "prisma db push",
+		"dbrefresh": "prisma db push --force-reset"
 	},
 	"main": "./src/index.js",
 	"type": "module",
