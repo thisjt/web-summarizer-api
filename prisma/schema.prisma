@@ -9,14 +9,13 @@ datasource db {
 }
 
 model Jobs {
-    id                    Int      @id @default(autoincrement())
+    id                    Int     @id @default(autoincrement())
     url                   String
     // apparently sqlite does not support enums
     // status: [queue, processing, completed, failed]
     status                String
     summary               String?
     summary_logs          String?
-    summary_error         Boolean?
     summary_error_message String?
     timestamp             BigInt
     finished              BigInt?
