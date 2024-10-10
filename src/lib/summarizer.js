@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import prisma from './prisma';
+import log from './logging';
 
 const SHORT_PARAGRAPH = 100; //characters
 const INFERENCE_API = process.env.INFERENCE_API || 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn';
@@ -20,6 +21,7 @@ export class Summarizer {
 
 	/**@param {(string | number)[]} text */
 	logger(...text) {
+		log(`${new Date().toLocaleTimeString()}: ${text.join(' ')}`);
 		this.logs += `${new Date().toLocaleTimeString()}: ${text.join(' ')}\n`;
 	}
 
@@ -49,7 +51,7 @@ export class Summarizer {
 				where: { id: this.id },
 			});
 		} catch (e) {
-			console.log('Error', e);
+			log('Error', e);
 		}
 	}
 
@@ -137,6 +139,7 @@ export class Summarizer {
 	/**@param {string} summary */
 	async save(summary) {
 		try {
+			this.logger('Saving to db');
 			const result = await prisma.jobs.update({
 				data: {
 					status: 'completed',
@@ -152,7 +155,6 @@ export class Summarizer {
 					url: true,
 					status: true,
 					summary: true,
-					summary_error: true,
 					summary_error_message: true,
 					timestamp: true,
 				},
@@ -183,7 +185,7 @@ export class Summarizer {
 				},
 			});
 		} catch (e) {
-			console.log('Error', e);
+			log('Error', e);
 		}
 	}
 }
