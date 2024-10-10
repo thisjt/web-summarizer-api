@@ -22,16 +22,18 @@ export class Summarizer {
 
 	async run() {
 		this.logger('Starting job id', this.id);
+
 		const scrapeData = await this.scrape();
 		if (scrapeData.error || !scrapeData.data) return await this.fail();
 
 		const clean = this.cleanup(scrapeData.data);
-		return clean;
+		if (clean.error) return await this.fail();
 	}
 
 	/**@param {string} [url] */
 	async scrape(url) {
 		url = url || this.url;
+		this.logger('Scraping page.');
 
 		try {
 			const browser = await puppeteer.launch();
@@ -50,7 +52,7 @@ export class Summarizer {
 	}
 
 	/**@param {string} html */
-	async cleanup(html) {
+	cleanup(html) {
 		const htmlTrimmedSpaces = html
 			.split('\n')
 			.map((line) => line.replace(/\s+/g, ' ').trim())
@@ -58,7 +60,9 @@ export class Summarizer {
 		const htmlSplitNewLine = htmlTrimmedSpaces.split('\n\n\n');
 		htmlSplitNewLine.forEach((v, i) => (htmlSplitNewLine[i] = htmlSplitNewLine[i].trim()));
 		const htmlFilterShortStrings = htmlSplitNewLine.filter((str) => str.length > SHORT_PARAGRAPH);
-		return htmlFilterShortStrings.join(' ');
+		const htmlParagraph = htmlFilterShortStrings.join(' ');
+		if (htmlParagraph.length > SHORT_PARAGRAPH) return { error: false, data: htmlParagraph };
+		else return { error: true };
 	}
 
 	async summarize() {}
