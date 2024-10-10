@@ -9,6 +9,7 @@ const LOGLEVEL = 'debug';
  * @param {number} [data.id]
  * @param {string} [data.url]
  * @param {"queue" | "processing" | "completed" | "failed" | string} [data.status]
+ * @param {number} [data.timestamp]
  * @param {*} [data.debug]
  */
 export default function emit(data) {
