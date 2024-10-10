@@ -108,6 +108,9 @@ export class Summarizer {
 		// I had issues with being rate limited due to pushing too much data to HF
 		const truncatedParagraph = paragraph.slice(0, 5000);
 
+		/**@type {{summary_text:string | null}[] | null} */
+		let data = null;
+
 		try {
 			this.logger('Calling HF API for summarization');
 			const response = await fetch(INFERENCE_API, {
@@ -120,8 +123,7 @@ export class Summarizer {
 					inputs: truncatedParagraph,
 				}),
 			});
-			/**@type {{summary_text:string | null}[] | null} */
-			const data = await response.json();
+			data = await response.json();
 
 			if (data?.[0]?.summary_text) {
 				return { error: false, data: data[0].summary_text, truncatedParagraph };
@@ -134,6 +136,7 @@ export class Summarizer {
 		} catch (e) {
 			this.logger('Failed to summarize paragraph');
 			this.logger(JSON.stringify(e));
+			this.logger(JSON.stringify(data));
 			return { error: true };
 		}
 	}
