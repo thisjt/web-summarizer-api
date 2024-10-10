@@ -1,8 +1,9 @@
 {
 	"name": "web-summarizer-api",
 	"scripts": {
-		"dev": ""
+		"dev": "node ."
 	},
+	"main": "./src/index.js",
 	"type": "module",
 	"dependencies": {
 		"express": "^4.21.1"
