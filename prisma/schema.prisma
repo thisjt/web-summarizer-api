@@ -15,6 +15,7 @@ model Jobs {
     // status: [queue, processing, completed, failed]
     status                String
     summary               String?
+    summary_logs          String?
     summary_error         Boolean?
     summary_error_message String?
     timestamp             BigInt
