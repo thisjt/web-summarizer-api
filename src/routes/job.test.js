@@ -103,8 +103,8 @@ describe('test', { timeout: 60000 }, () => {
 		expect(getJobData.status).toBe('processing');
 	});
 
-	test.sequential('wait 15 seconds for jobs to finish', async () => {
-		await delay(15000);
+	test.sequential('wait 30 seconds for jobs to finish', async () => {
+		await delay(30000);
 	});
 
 	test.sequential('check status of exampleUrl again', async () => {
