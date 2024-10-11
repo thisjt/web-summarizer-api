@@ -18,5 +18,5 @@ app.listen(port, () => {
 if (process.env.TEST) {
 	setTimeout(() => {
 		process.exit();
-	}, 60000 * 5);
+	}, 60000);
 }

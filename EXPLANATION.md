@@ -51,7 +51,7 @@ The fixes that the web provides is either related to transformation, or is imple
 
 5. We are using local SQLite. For it to be deployed, using a database service such as Turso, Neon, PlanetScale, etc. would be better. It will not be that much of a problem as Prisma is very flexible and can cater a lot of database sources.
 
-6. The lint and integration test runs for 5 minutes. Locally, it only ran for around 20~30 seconds. Concurrently probably has an issue with SIGTERM not being able to propagate to the running development server in Github Actions.
+6. The lint and integration test runs for 1 minute due to the development server timeout set during testing. Locally, it only ran for around 20~30 seconds and exited gracefully. Concurrently probably has an issue with SIGTERM not being able to propagate to the running development server in Github Actions.
 
 7. In order to save HF API calls, it would be a good addition to have an option user input of a timestamp. It is possible that that URL has already been requested by a different user before. As long as the user requesting that URL does not need the latest summary of that page, then the result in the db would most likely suffice without re-scraping the page.
 
