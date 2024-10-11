@@ -56,3 +56,13 @@ The fixes that the web provides is either related to transformation, or is imple
 # Other Things for Discussion
 
 There are some comments sprinkled on the source code. However, the code is written in a way so that everything is self-explanatory and does not require comments for clarification.
+
+# Approaching the Problem
+
+Knowing the requirements of a client is of utmost importance. Everything needs to be known first on what they really want with the project, which is especially hard if the client does not fully know what he needs. Which is why I need to be flexible with how I approach a problem. Mostly it is driven first by experience on the various technologies that can make things possible, and a lot of research regarding specific topics.
+
+In this case, I have already tried out puppeteer, but its use for me is more towards browser testing and not scraping. It's a good thing the assessment provided a suggestion of using this, or I could have steered in a different direction, possibly going towards using `fetch` and `JSDOM`, which would be much harder, although that does make it less dependent on an actual browser for rendering.
+
+For Prisma, not much reason, it's usually my go-to solution when I need a database.
+
+I was originally debating whether to use `hono` or `express`, but I eventually settled to using express as I'm way more familiar to it compared to hono. Hono has a lot more fancy plugins compared to express, but express is just easier to use and implement in my opinion. Maybe in the future when I have a bit more time, I'll play with it.
