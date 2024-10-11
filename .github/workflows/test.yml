@@ -28,3 +28,9 @@ jobs:
         run: pnpm install
       - name: run lint
         run: pnpm lint
+      - name: run integration test
+        run: pnpm test
+        env:
+          LOGLEVEL: debug
+          HFTOKEN: ${{secrets.HFTOKEN}}
+          INFERENCE_API: ${{vars.INFERENCE_API}}
