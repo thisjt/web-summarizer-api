@@ -1,4 +1,4 @@
-const LOGLEVEL = process.env.LOGLEVEL;
+import log from './logging';
 
 /**
  * @typedef {import('zod').SafeParseError<any>} SafeParseError
@@ -13,7 +13,7 @@ const LOGLEVEL = process.env.LOGLEVEL;
  * @param {*} [data.debug]
  */
 export default function emit(data) {
-	if (LOGLEVEL === 'debug' && data.debug) console.log(data.debug);
+	log(data.debug);
 	delete data.debug;
 
 	if (data.errors) {
