@@ -9,7 +9,7 @@
 		"studio": "prisma studio",
 		"test:dbrefresh": "cross-env DATABASE_URL=file:./test.db prisma db push --force-reset",
 		"test:devserver": "cross-env PORT=4099 tsx src/index.js",
-		"test:vitest": "vitest run",
+		"test:vitest": "cross-env PORT=4099 vitest run",
 		"test": "pnpm test:dbrefresh && concurrently --kill-others --success first \"pnpm test:vitest\" \"pnpm test:devserver\""
 	},
 	"main": "./src/index.js",
