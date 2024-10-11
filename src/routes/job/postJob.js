@@ -44,6 +44,10 @@ export default function postJob() {
 
 		response.json(emit({ id: result.id, url: parseResult.data.url, status: 'queue', timestamp }));
 
+		/**
+		 * After sending a response json, the browser requesting this endpoint can close.
+		 * The server can continue to process the summarizer in the background.
+		 */
 		new Summarizer(result.id, parseResult.data.url);
 	});
 }
