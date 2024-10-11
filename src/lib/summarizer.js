@@ -68,7 +68,8 @@ export class Summarizer {
 			this.logger('Going to url');
 			await page.goto(url, { waitUntil: 'load', timeout: 15000 });
 			this.logger('Waiting for load to finish');
-			await page.waitForFunction('window.performance.timing.loadEventEnd - window.performance.timing.navigationStart >= 500');
+			await new Promise((res) => setTimeout(res, 3000));
+			// await page.waitForFunction('window.performance.timing.loadEventEnd - window.performance.timing.navigationStart >= 500');
 			const bodyHandle = await page.$('body');
 			this.logger('Grabbing page body');
 			const html = await page.evaluate((body) => {
