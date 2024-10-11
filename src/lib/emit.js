@@ -2,7 +2,10 @@ import log from './logging';
 
 /**
  * @typedef {import('zod').SafeParseError<any>} SafeParseError
- *
+ */
+/**
+ * This function is for normalizing the output we are sending to the requestor. It
+ * makes the response more consistent and regular.
  * @param {object} data
  * @param {Object<string, string[]>} [data.errors]
  * @param {SafeParseError} [data.zodErrors]
@@ -13,7 +16,7 @@ import log from './logging';
  * @param {*} [data.debug]
  */
 export default function emit(data) {
-	log(data.debug);
+	if (data.debug) log(data.debug);
 	delete data.debug;
 
 	if (data.errors) {
