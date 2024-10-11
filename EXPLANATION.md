@@ -53,6 +53,8 @@ The fixes that the web provides is either related to transformation, or is imple
 
 6. The lint and integration test runs for 5 minutes. Locally, it only ran for around 20~30 seconds. Concurrently probably has an issue with SIGTERM not being able to propagate to the running development server in Github Actions.
 
+7. In order to save HF API calls, it would be a good addition to have an option user input of a timestamp. It is possible that that URL has already been requested by a different user before. As long as the user requesting that URL does not need the latest summary of that page, then the result in the db would most likely suffice without re-scraping the page.
+
 # Other Things for Discussion
 
 There are some comments sprinkled on the source code. However, the code is written in a way so that everything is self-explanatory and does not require comments for clarification.
