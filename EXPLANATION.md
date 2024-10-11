@@ -50,3 +50,9 @@ The fixes that the web provides is either related to transformation, or is imple
 4. This project has no build process, so we are not yet able to deploy this into serverless functions. The only reason we need a build process even though everything is coded in JS is because of using aliases. We can either use rollup to compile the project into a single file or just replace the aliases to the proper paths, which is not recommended especially if more endpoints are needed.
 
 5. We are using local SQLite. For it to be deployed, using a database service such as Turso, Neon, PlanetScale, etc. would be better. It will not be that much of a problem as Prisma is very flexible and can cater a lot of database sources.
+
+6. The lint and integration test runs for 5 minutes. Locally, it only ran for around 20~30 seconds. Concurrently probably has an issue with SIGTERM not being able to propagate to the running development server in Github Actions.
+
+# Other Things for Discussion
+
+There are some comments sprinkled on the source code. However, the code is written in a way so that everything is self-explanatory and does not require comments for clarification.
