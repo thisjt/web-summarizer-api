@@ -11,4 +11,4 @@ app.use((request, response, next) => {
 	next();
 });
 
-export const port = 5013;
+export const port = process.env.PORT || 5013;
