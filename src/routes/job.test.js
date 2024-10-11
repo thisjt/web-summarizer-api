@@ -103,15 +103,26 @@ describe('test', { timeout: 60000 }, () => {
 		expect(getJobData.status).toBe('processing');
 	});
 
-	test.sequential('wait 20 seconds for jobs to finish', async () => {
-		await delay(20000);
+	test.sequential('keep checking for all jobs to finish for up to 5 mins', async () => {
+		const timeout = new Date().getTime() + 60000 * 5; // 5 mins
+		while (timeout > new Date().getTime()) {
+			const [a, b, c] = await Promise.all([
+				fetch(`${TESTURL}/job/${jobData.exampleUrlId}`),
+				fetch(`${TESTURL}/job/${jobData.nonexistentUrlId}`),
+				fetch(`${TESTURL}/job/${jobData.noDomainUrlId}`),
+			]);
+			const [a2, b2, c2] = await Promise.all([a.json(), b.json(), c.json()]);
+			if (a2.status !== 'processing' && b2.status !== 'processing' && c2.status !== 'processing') break;
+
+			await delay(15000);
+		}
 	});
 
 	test.sequential('check status of exampleUrl again', async () => {
 		const getJob = await fetch(`${TESTURL}/job/${jobData.exampleUrlId}`);
 		const getJobData = await getJob.json();
 
-		expect(['processing', 'failed', 'completed'].includes(getJobData.status)).toBe(true);
+		expect(['failed', 'completed'].includes(getJobData.status)).toBe(true);
 		jobData.exampleUrlSummary = getJobData;
 	});
 
@@ -119,7 +130,7 @@ describe('test', { timeout: 60000 }, () => {
 		const getJob = await fetch(`${TESTURL}/job/${jobData.nonexistentUrlId}`);
 		const getJobData = await getJob.json();
 
-		expect(['processing', 'failed', 'completed'].includes(getJobData.status)).toBe(true);
+		expect(['failed', 'completed'].includes(getJobData.status)).toBe(true);
 		jobData.nonexistentUrlSummary = getJobData;
 	});
 
@@ -127,7 +138,7 @@ describe('test', { timeout: 60000 }, () => {
 		const getJob = await fetch(`${TESTURL}/job/${jobData.noDomainUrlId}`);
 		const getJobData = await getJob.json();
 
-		expect(['processing', 'failed', 'completed'].includes(getJobData.status)).toBe(true);
+		expect(['failed', 'completed'].includes(getJobData.status)).toBe(true);
 		jobData.noDomainUrlSummary = getJobData;
 	});
 
