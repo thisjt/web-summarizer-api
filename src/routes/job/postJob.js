@@ -44,7 +44,6 @@ export default function postJob() {
 
 		response.json(emit({ id: result.id, url: parseResult.data.url, status: 'queue', timestamp }));
 
-		const summarize = new Summarizer(result.id, parseResult.data.url);
-		summarize.run();
+		new Summarizer(result.id, parseResult.data.url);
 	});
 }

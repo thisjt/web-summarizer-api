@@ -15,16 +15,22 @@ export class Summarizer {
 	constructor(id, url) {
 		this.url = url || '';
 		this.id = id;
+
+		this.run();
 	}
 	url = '';
 	logs = '';
 
-	/**@param {(string | number)[]} text */
+	/**
+	 * Log collector for storing to db
+	 * @param {(string | number)[]} text
+	 */
 	logger(...text) {
 		log(`${new Date().toLocaleTimeString()}: ${text.join(' ')}`);
 		this.logs += `${new Date().toLocaleTimeString()}: ${text.join(' ')}\n`;
 	}
 
+	/* Initializer */
 	async run() {
 		this.logger('Starting job id', this.id);
 
@@ -42,6 +48,7 @@ export class Summarizer {
 		this.save(summary.data);
 	}
 
+	/* Sets the status of the job to "processing" */
 	async pending() {
 		try {
 			await prisma.jobs.update({
@@ -55,7 +62,13 @@ export class Summarizer {
 		}
 	}
 
-	/**@param {string} [url] */
+	/**
+	 * Web Scraper using puppeteer. If this will not be used
+	 * in a serverless environment, it would preferably a good
+	 * thing to keep browser windows open, and just navigate to
+	 * pages accordingly depending on the request.
+	 * @param {string} [url]
+	 */
 	async scrape(url) {
 		url = url || this.url;
 		this.logger('Scraping page');
@@ -69,11 +82,15 @@ export class Summarizer {
 			await page.goto(url, { waitUntil: 'load', timeout: 15000 });
 			this.logger('Waiting for load to finish');
 			await new Promise((res) => setTimeout(res, 3000));
-			// await page.waitForFunction('window.performance.timing.loadEventEnd - window.performance.timing.navigationStart >= 500');
 			const bodyHandle = await page.$('body');
 			this.logger('Grabbing page body');
 			const html = await page.evaluate((body) => {
 				let pData = '';
+				/**
+				 * Grabbing text inside the <p> tags are better than trying to filter out
+				 * unwanted elements. This is a design choice, but it can be better. We do lose
+				 * a bit of potentially useful data for summarization though.
+				 */
 				[...(body?.querySelectorAll('p') || [])].forEach((p) => {
 					pData += p.textContent + ' ';
 				});
@@ -90,7 +107,12 @@ export class Summarizer {
 		}
 	}
 
-	/**@param {string} html */
+	/**
+	 * Cleans up the HTML scraped by the scraper. We tried our best
+	 * to get rid of short texts as to not clutter the paragraph that
+	 * we will be sending to the Inference API later.
+	 * @param {string} html
+	 */
 	cleanup(html) {
 		const htmlTrimmedSpaces = html
 			.split('\n')
@@ -106,7 +128,10 @@ export class Summarizer {
 
 	/**@param {string} paragraph */
 	async summarize(paragraph) {
-		// I had issues with being rate limited due to pushing too much data to HF
+		/**
+		 * I had issues with being rate limited due to pushing too much data to HF. I tried slicing
+		 * the paragraph to 5k characters, but we still encounter issues, see EXPLANATION.md#Things-to-Improve#1.
+		 */
 		const truncatedParagraph = paragraph.slice(0, 5000);
 
 		/**@type {{summary_text:string | null}[] | null} */
@@ -131,7 +156,6 @@ export class Summarizer {
 			} else {
 				this.logger('Unable to grab summary_text');
 				this.logger(JSON.stringify(data));
-				// log(truncatedParagraph);
 				return { error: true };
 			}
 		} catch (e) {
@@ -142,7 +166,10 @@ export class Summarizer {
 		}
 	}
 
-	/**@param {string} summary */
+	/**
+	 * Save generated summary to the database
+	 * @param {string} summary
+	 */
 	async save(summary) {
 		try {
 			this.logger('Saving to db');
@@ -175,6 +202,7 @@ export class Summarizer {
 	}
 
 	/**
+	 * Set status to failed when we are unable to generate a summary due to various reasons
 	 * @param {string} errmessage
 	 * @param {string} [lastline]
 	 */
