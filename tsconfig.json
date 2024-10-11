@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"paths": {
+			// I'm kind of used to sveltekit's $lib alias, so im reusing it here
+			"$lib/*": ["./src/lib/*"]
+		}
+	},
+	"files": [],
+	"references": [{ "path": "./jsconfig.json" }]
+}
