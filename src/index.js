@@ -14,3 +14,9 @@ app.all('*', (request, response) => {
 app.listen(port, () => {
 	console.log(`Listening on http://localhost:${port}`);
 });
+
+if (process.env.TEST) {
+	setTimeout(() => {
+		process.exit();
+	}, 60000 * 5);
+}

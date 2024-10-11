@@ -8,7 +8,7 @@
 		"dbrefresh": "prisma db push --force-reset",
 		"studio": "prisma studio",
 		"test:dbrefresh": "cross-env DATABASE_URL=file:./test.db prisma db push --force-reset",
-		"test:devserver": "cross-env DATABASE_URL=file:./test.db PORT=4099 tsx src/index.js",
+		"test:devserver": "cross-env DATABASE_URL=file:./test.db PORT=4099 TEST=true tsx src/index.js",
 		"test:vitest": "cross-env PORT=4099 vitest run --reporter=verbose",
 		"test": "pnpm test:dbrefresh && concurrently --kill-others --success first \"pnpm test:vitest\" \"pnpm test:devserver\""
 	},
