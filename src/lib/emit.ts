@@ -1,4 +1,5 @@
 import log from './logging';
+import type { SafeParseError } from 'zod';
 
 /**
  * @typedef {import('zod').SafeParseError<any>} SafeParseError
@@ -15,7 +16,15 @@ import log from './logging';
  * @param {number} [data.timestamp]
  * @param {*} [data.debug]
  */
-export default function emit(data) {
+export default function emit(data: {
+	errors?: { [s: string]: string[] };
+	zodErrors?: SafeParseError<unknown>;
+	id?: number;
+	url?: string;
+	status?: 'queue' | 'processing' | 'completed' | 'failed' | string;
+	timestamp?: number;
+	debug?: unknown;
+}) {
 	if (data.debug) log(data.debug);
 	delete data.debug;
 

@@ -147,7 +147,6 @@ describe('test', { timeout: 60000 }, () => {
 	});
 });
 
-/**@param {number} time */
-async function delay(time) {
+async function delay(time: number) {
 	await new Promise((res) => setTimeout(res, time));
 }

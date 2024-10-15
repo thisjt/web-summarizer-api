@@ -12,12 +12,13 @@ export class Summarizer {
 	 * @param {number} id
 	 * @param {string} [url]
 	 */
-	constructor(id, url) {
+	constructor(id: number, url: string) {
 		this.url = url || '';
 		this.id = id;
 
 		this.run();
 	}
+	id = 0;
 	url = '';
 	logs = '';
 
@@ -25,7 +26,7 @@ export class Summarizer {
 	 * Log collector for storing to db
 	 * @param {(string | number)[]} text
 	 */
-	logger(...text) {
+	logger(...text: (string | number)[]) {
 		log(`${new Date().toLocaleTimeString()}: ${text.join(' ')}`);
 		this.logs += `${new Date().toLocaleTimeString()}: ${text.join(' ')}\n`;
 	}
@@ -69,7 +70,7 @@ export class Summarizer {
 	 * pages accordingly depending on the request.
 	 * @param {string} [url]
 	 */
-	async scrape(url) {
+	async scrape(url?: string) {
 		url = url || this.url;
 		this.logger('Scraping page');
 
@@ -113,7 +114,7 @@ export class Summarizer {
 	 * we will be sending to the Inference API later.
 	 * @param {string} html
 	 */
-	cleanup(html) {
+	cleanup(html: string) {
 		const htmlTrimmedSpaces = html
 			.split('\n')
 			.map((line) => line.replace(/\s+/g, ' ').trim())
@@ -127,7 +128,7 @@ export class Summarizer {
 	}
 
 	/**@param {string} paragraph */
-	async summarize(paragraph) {
+	async summarize(paragraph: string) {
 		/**
 		 * I had issues with being rate limited due to pushing too much data to HF. I tried slicing
 		 * the paragraph to 5k characters, but we still encounter issues, see EXPLANATION.md#Things-to-Improve#1.
@@ -135,7 +136,7 @@ export class Summarizer {
 		const truncatedParagraph = paragraph.slice(0, 5000);
 
 		/**@type {{summary_text:string | null}[] | null} */
-		let data = null;
+		let data: { summary_text: string | null }[] | null = null;
 
 		try {
 			this.logger('Calling HF API for summarization');
@@ -170,7 +171,7 @@ export class Summarizer {
 	 * Save generated summary to the database
 	 * @param {string} summary
 	 */
-	async save(summary) {
+	async save(summary: string) {
 		try {
 			this.logger('Saving to db');
 			const result = await prisma.jobs.update({
@@ -206,7 +207,7 @@ export class Summarizer {
 	 * @param {string} errmessage
 	 * @param {string} [lastline]
 	 */
-	async fail(errmessage, lastline) {
+	async fail(errmessage: string, lastline?: string) {
 		try {
 			if (lastline) this.logger(lastline);
 
