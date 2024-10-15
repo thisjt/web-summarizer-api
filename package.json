@@ -1,7 +1,7 @@
 {
 	"name": "web-summarizer-api",
 	"scripts": {
-		"dev": "tsx watch src/index.js",
+		"dev": "pkgroll --watch",
 		"lint": "prettier --check . && eslint .",
 		"generate": "prisma generate",
 		"dbsync": "prisma db push",
@@ -24,6 +24,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.12.0",
+		"@types/express": "^5.0.0",
 		"@types/node": "^22.7.5",
 		"concurrently": "^9.0.1",
 		"cross-env": "^7.0.3",
