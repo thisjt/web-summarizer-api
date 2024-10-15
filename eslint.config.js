@@ -1,6 +1,7 @@
 import globals from 'globals';
 import prettier from 'eslint-config-prettier';
-import js from '@eslint/js';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
 /**
  * I have my own eslint and prettier config that I usually copy paste to all of
@@ -9,6 +10,7 @@ import js from '@eslint/js';
 
 export default [
 	prettier,
+	...tseslint.configs.recommended,
 	{
 		files: ['**/*.ts'],
 		ignores: ['.env', '.env.*', '!.env.example', 'pnpm-lock.yaml'],
@@ -20,7 +22,7 @@ export default [
 			},
 		},
 		rules: {
-			...js.configs.recommended.rules,
+			...eslint.configs.recommended.rules,
 			...{
 				'no-undef': ['error', { typeof: true }],
 				eqeqeq: 'error',
