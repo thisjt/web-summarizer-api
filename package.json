@@ -2,7 +2,7 @@
 	"name": "web-summarizer-api",
 	"scripts": {
 		"dev": "tsx --watch ./src/index.ts",
-		"lint": "prettier --check . && eslint .",
+		"lint": "prettier --check . && eslint . && tsx",
 		"generate": "prisma generate",
 		"dbsync": "prisma db push",
 		"dbrefresh": "prisma db push --force-reset",
