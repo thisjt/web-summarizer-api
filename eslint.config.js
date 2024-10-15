@@ -10,7 +10,7 @@ import js from '@eslint/js';
 export default [
 	prettier,
 	{
-		files: ['**/*.js'],
+		files: ['**/*.ts'],
 		ignores: ['.env', '.env.*', '!.env.example', 'pnpm-lock.yaml'],
 		languageOptions: {
 			sourceType: 'module',
