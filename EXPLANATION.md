@@ -74,3 +74,5 @@ I was originally debating whether to use `hono` or `express`, but I eventually s
 Converted JavaScript files to TypeSript files. I realized there's no point in flexing my JSDoc skills. It was fun though.
 
 I want to upload this script as a Cloudflare Worker for it to be demo-able, but their [browser rendering service](https://developers.cloudflare.com/browser-rendering/) (which uses puppeteer under the hood) is a paid plan.
+
+You might have wondered why I almost always only have `main` and `develop` branches. It's because since I am a solo developer, I usually just push all of my commits to the `develop` branch, and do a PR to `main` when I have multiple commits already. I usually do the PR when a minor/major feature gets finished, and I almost always make sure that what I PR to `main` is stable and does not have any issues. Github action is a nice tool that does it for me.
