@@ -12,7 +12,9 @@
 		"test:vitest": "cross-env PORT=4099 vitest run --reporter=verbose",
 		"test": "pnpm test:dbrefresh && concurrently --kill-others --success first \"pnpm test:vitest\" \"pnpm test:devserver\""
 	},
-	"main": "./src/index.js",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.cts",
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^5.20.0",
