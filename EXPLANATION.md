@@ -66,3 +66,11 @@ In this case, I have already tried out puppeteer, but its use for me is more tow
 For Prisma, not much reason, it's usually my go-to solution when I need a database.
 
 I was originally debating whether to use `hono` or `express`, but I eventually settled to using express as I'm way more familiar to it compared to hono. Hono has a lot more fancy plugins compared to express, but express is just easier to use and implement in my opinion. Maybe in the future when I have a bit more time, I'll play with it.
+
+---
+
+# Update 1
+
+Converted JavaScript files to TypeSript files. I realized there's no point in flexing my JSDoc skills. It was fun though.
+
+I want to upload this script as a Cloudflare Worker for it to be demo-able, but their [browser rendering service](https://developers.cloudflare.com/browser-rendering/) (which uses puppeteer under the hood) is a paid plan.
