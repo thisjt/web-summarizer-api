@@ -1,0 +1,25 @@
+{
+	"name": "web-summarizer-api-hono-refactor",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy --minify"
+	},
+	"dependencies": {
+		"hono": "^4.6.6"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20240925.0",
+		"@hono/zod-openapi": "^0.16.4",
+		"@prisma/adapter-d1": "^5.21.1",
+		"@prisma/client": "^5.21.1",
+		"@scalar/hono-api-reference": "^0.5.156",
+		"eslint": "^9.13.0",
+		"eslint-config-prettier": "^9.1.0",
+		"globals": "^15.11.0",
+		"prettier": "^3.3.3",
+		"prisma": "^5.21.1",
+		"stoker": "^1.2.7",
+		"typescript-eslint": "^8.11.0",
+		"wrangler": "^3.79.0"
+	}
+}
