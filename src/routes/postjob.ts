@@ -1,6 +1,4 @@
-import { OpenAPIHono } from '@hono/zod-openapi';
-
-const app = new OpenAPIHono();
+import app from '../lib/app';
 
 const postjob = app.post('/job', (c) => {
 	return c.text('Post Job!');
