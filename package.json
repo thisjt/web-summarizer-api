@@ -1,9 +1,12 @@
 {
-	"name": "web-summarizer-api-hono-refactor",
+	"name": "web-summarizer-api",
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify"
 	},
+	"author": "thisjt",
+	"version": "1.0.0",
+	"type": "module",
 	"dependencies": {
 		"hono": "^4.6.6"
 	},
@@ -16,6 +19,7 @@
 		"eslint": "^9.13.0",
 		"eslint-config-prettier": "^9.1.0",
 		"globals": "^15.11.0",
+		"http-status-codes": "^2.3.0",
 		"prettier": "^3.3.3",
 		"prisma": "^5.21.1",
 		"stoker": "^1.2.7",
