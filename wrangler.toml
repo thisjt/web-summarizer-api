@@ -1,4 +1,4 @@
-name = "web-summarizer-api-hono-refactor"
+name = "web-summarizer-api"
 main = "src/index.ts"
 compatibility_date = "2024-10-25"
 compatibility_flags = [ "nodejs_compat" ]
