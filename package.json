@@ -25,5 +25,6 @@
 		"stoker": "^1.2.7",
 		"typescript-eslint": "^8.11.0",
 		"wrangler": "^3.79.0"
-	}
+	},
+	"packageManager": "pnpm@9.9.0"
 }
