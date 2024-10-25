@@ -1,7 +1,11 @@
 import app from '../lib/app';
 import { z, createRoute } from '@hono/zod-openapi';
+import { jsonContent } from 'stoker/openapi/helpers';
+import * as StatusCodes from 'stoker/http-status-codes';
+import { createErrorSchema } from 'stoker/openapi/schemas';
+import { notFoundSchema } from '../lib/constants';
 
-const TokenSchema = z.object({
+export const TokenSchema = z.object({
 	token: z.coerce.string().openapi({
 		title: 'Authentication Token',
 		description: 'Token used to access this API.',
@@ -71,16 +75,30 @@ export const JobDetails = z.object({
 	}),
 });
 
-// const route = createRoute({
-// 	method: 'get',
-// 	path: '/job/{id}',
-// 	request: {
-// 		params:
-// 	}
-// })
+const route = createRoute({
+	method: 'get',
+	path: '/job/{id}',
+	request: {
+		params: IdSchema,
+		query: TokenSchema,
+	},
+	responses: {
+		[StatusCodes.OK]: jsonContent(JobDetails, 'Job Retrieved'),
+		[StatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, 'Job ID not found'),
+		[StatusCodes.UNAUTHORIZED]: jsonContent(TokenSchema, 'Unauthorized'),
+	},
+});
 
-const getjob = app.get('/job/{id}', (c) => {
-	return c.text('Get Job!');
+const getjob = app.openapi(route, async (c) => {
+	return c.json(
+		{
+			id: 3,
+			url: 'https://asdads',
+			status: 'asd',
+			timestamp: 123123,
+		},
+		StatusCodes.OK
+	);
 });
 
 export default getjob;
