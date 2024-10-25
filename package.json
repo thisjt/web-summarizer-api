@@ -1,11 +1,16 @@
 {
 	"name": "web-summarizer-api",
+	"properName": "Web Summarizer API",
+	"description": "A simple API that scrapes a webpage, creates a summary of what is inside it using LLM, and delivers it to the user.",
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify"
 	},
 	"author": "thisjt",
+	"authorUrl": "https://thisjt.me",
+	"authorEmail": "contact@thisjt.me",
 	"version": "1.0.0",
+	"private": false,
 	"type": "module",
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240925.0",
