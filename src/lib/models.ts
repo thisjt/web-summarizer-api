@@ -68,7 +68,7 @@ export const JobDetails = z
 	})
 	.openapi('Job');
 
-export const MultipleJobDetails = z.array(JobDetails);
+export const MultipleJobDetails = z.array(JobDetails).openapi('Multiple Jobs');
 
 export const JobCreate = z
 	.object({
