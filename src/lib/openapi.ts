@@ -32,6 +32,6 @@ export function mountOpenApi(app: OpenAPIHono) {
 			spec: {
 				url: '/_openapischema',
 			},
-		})
+		}),
 	);
 }

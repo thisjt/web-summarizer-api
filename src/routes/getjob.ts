@@ -42,7 +42,7 @@ const getjob = app.openapi(route, async (c) => {
 			status: 'asd',
 			timestamp: 123123,
 		},
-		StatusCodes.OK
+		StatusCodes.OK,
 	);
 });
 
