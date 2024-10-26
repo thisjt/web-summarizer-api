@@ -11,3 +11,6 @@ database_id = "e4d5f617-9412-45f4-8b77-e8629e421b48"
 [observability]
 enabled = true
 # head_sampling_rate = 1
+
+[browser]
+binding = "BROWSER"
