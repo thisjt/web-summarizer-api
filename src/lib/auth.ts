@@ -9,18 +9,21 @@ type Bindings = {
 const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
 export const TokenSchema = z.object({
-	token: z.coerce.string().openapi({
-		param: {
-			name: 'token',
-			in: 'query',
-			required: true,
-		},
-		title: 'Authentication Token',
-		description: 'Token used to access this API.',
-		type: 'string',
-		format: 'xxxxxxxxxxxxxxxxxxxx',
-		example: 'abcde12345abcde12345',
-	}),
+	token: z.coerce
+		.string()
+		.length(20, { message: 'Incorrect token length' })
+		.openapi({
+			param: {
+				name: 'token',
+				in: 'query',
+				required: true,
+			},
+			title: 'Authentication Token',
+			description: 'Token used to access this API.',
+			type: 'string',
+			format: 'xxxxxxxxxxxxxxxxxxxx',
+			example: 'abcde12345abcde12345',
+		}),
 });
 
 const auth = app.use('/*', async (c, next) => {
