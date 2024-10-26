@@ -1,6 +1,6 @@
 import { z } from '@hono/zod-openapi';
 
-const JobDetails = z
+export const JobDetails = z
 	.object({
 		id: z.number().openapi({
 			title: 'Job ID',
@@ -67,4 +67,12 @@ const JobDetails = z
 	})
 	.openapi('Job');
 
-export default JobDetails;
+export const JobCreate = z.object({
+	url: z.string().startsWith('https://').openapi({
+		title: 'URL',
+		description: 'URL that is or will be summarized.',
+		type: 'string',
+		format: 'https://[domain]/[path]',
+		example: 'https://www.iana.org/help/example-domains',
+	}),
+});

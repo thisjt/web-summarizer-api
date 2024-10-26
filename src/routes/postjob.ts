@@ -1,7 +1,34 @@
 import app from '../lib/app';
+import { z, createRoute } from '@hono/zod-openapi';
+import { jsonContent } from 'stoker/openapi/helpers';
+import * as StatusCodes from 'stoker/http-status-codes';
+import { createErrorSchema } from 'stoker/openapi/schemas';
+import { unauthorizedSchema } from '../lib/constants';
+import { JobCreate, JobDetails } from '../lib/models';
 
-const postjob = app.post('/job', (c) => {
-	return c.text('Post Job!');
+const route = createRoute({
+	method: 'post',
+	path: '/job',
+	request: {
+		body: jsonContent(JobCreate, 'Create a Job'),
+	},
+	responses: {
+		[StatusCodes.OK]: jsonContent(JobDetails, 'Job created from given url'),
+		[StatusCodes.UNAUTHORIZED]: jsonContent(unauthorizedSchema, 'Unauthorized'),
+		[StatusCodes.BAD_REQUEST]: jsonContent(createErrorSchema(JobCreate), 'Error'),
+	},
 });
 
-export default postjob;
+const getjob = app.openapi(route, async (c) => {
+	return c.json(
+		{
+			id: 3,
+			url: 'https:// - ',
+			status: 'asd',
+			timestamp: 123123,
+		},
+		StatusCodes.OK
+	);
+});
+
+export default getjob;

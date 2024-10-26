@@ -5,7 +5,7 @@ import * as StatusCodes from 'stoker/http-status-codes';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 import { notFoundSchema, unauthorizedSchema } from '../lib/constants';
 import { TokenSchema } from '../lib/auth';
-import JobDetails from '../lib/models';
+import { JobDetails } from '../lib/models';
 
 const IdSchema = z.object({
 	id: z.coerce.number({ message: 'Invalid job id' }).openapi({
@@ -47,14 +47,3 @@ const getjob = app.openapi(route, async (c) => {
 });
 
 export default getjob;
-
-/*
-select: {
-	id: true,
-	url: true,
-	status: true,
-	summary: true,
-	summary_error_message: true,
-	timestamp: true,
-},
-*/
