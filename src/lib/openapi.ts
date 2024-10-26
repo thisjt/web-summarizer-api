@@ -21,7 +21,7 @@ export function mountOpenApi(app: OpenAPIHono) {
 		'/documentation',
 		apiReference({
 			theme: 'deepSpace',
-			layout: 'classic',
+			layout: 'modern',
 			defaultHttpClient: {
 				targetKey: 'javascript',
 				clientKey: 'fetch',

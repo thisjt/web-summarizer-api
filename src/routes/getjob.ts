@@ -3,7 +3,7 @@ import { z, createRoute } from '@hono/zod-openapi';
 import { jsonContent } from 'stoker/openapi/helpers';
 import * as StatusCodes from 'stoker/http-status-codes';
 import { createErrorSchema } from 'stoker/openapi/schemas';
-import { notFoundSchema } from '../lib/constants';
+import { notFoundSchema, unauthorizedSchema } from '../lib/constants';
 
 export const TokenSchema = z.object({
 	token: z.coerce.string().openapi({
@@ -77,7 +77,7 @@ export const JobDetails = z.object({
 
 const route = createRoute({
 	method: 'get',
-	path: '/job/{id}',
+	path: '/job/{id}?token={token}',
 	request: {
 		params: IdSchema,
 		query: TokenSchema,
@@ -85,7 +85,7 @@ const route = createRoute({
 	responses: {
 		[StatusCodes.OK]: jsonContent(JobDetails, 'Job Retrieved'),
 		[StatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, 'Job ID not found'),
-		[StatusCodes.UNAUTHORIZED]: jsonContent(TokenSchema, 'Unauthorized'),
+		[StatusCodes.UNAUTHORIZED]: jsonContent(unauthorizedSchema, 'Unauthorized'),
 	},
 });
 
