@@ -9,11 +9,13 @@ import tseslint from 'typescript-eslint';
  */
 
 export default [
+	{
+		ignores: ['node_modules/', '.wrangler/'],
+	},
 	prettier,
 	...tseslint.configs.recommended,
 	{
-		files: ['**/*.ts'],
-		ignores: ['.env', '.env.*', '!.env.example', 'pnpm-lock.yaml'],
+		files: ['./src/**/*.ts'],
 		languageOptions: {
 			sourceType: 'module',
 			globals: {
