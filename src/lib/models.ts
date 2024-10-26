@@ -67,12 +67,14 @@ export const JobDetails = z
 	})
 	.openapi('Job');
 
-export const JobCreate = z.object({
-	url: z.string().startsWith('https://').openapi({
-		title: 'URL',
-		description: 'URL that is or will be summarized.',
-		type: 'string',
-		format: 'https://[domain]/[path]',
-		example: 'https://www.iana.org/help/example-domains',
-	}),
-});
+export const JobCreate = z
+	.object({
+		url: z.string().startsWith('https://').openapi({
+			title: 'URL',
+			description: 'URL that is or will be summarized.',
+			type: 'string',
+			format: 'https://[domain]/[path]',
+			example: 'https://www.iana.org/help/example-domains',
+		}),
+	})
+	.openapi('Create Job');

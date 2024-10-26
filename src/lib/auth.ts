@@ -10,6 +10,11 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
 export const TokenSchema = z.object({
 	token: z.coerce.string().openapi({
+		param: {
+			name: 'token',
+			in: 'query',
+			required: true,
+		},
 		title: 'Authentication Token',
 		description: 'Token used to access this API.',
 		type: 'string',

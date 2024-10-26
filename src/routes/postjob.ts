@@ -5,15 +5,17 @@ import * as StatusCodes from 'stoker/http-status-codes';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 import { unauthorizedSchema } from '../lib/constants';
 import { JobCreate, JobDetails } from '../lib/models';
+import { TokenSchema } from '../lib/auth';
 
 const route = createRoute({
 	method: 'post',
 	path: '/job',
 	request: {
 		body: jsonContent(JobCreate, 'Create a Job'),
+		query: TokenSchema,
 	},
 	responses: {
-		[StatusCodes.OK]: jsonContent(JobDetails, 'Job created from given url'),
+		[StatusCodes.OK]: jsonContent(JobDetails, 'Job created from given url. Use the route /job/{id} to get job status'),
 		[StatusCodes.UNAUTHORIZED]: jsonContent(unauthorizedSchema, 'Unauthorized'),
 		[StatusCodes.BAD_REQUEST]: jsonContent(createErrorSchema(JobCreate), 'Error'),
 	},
