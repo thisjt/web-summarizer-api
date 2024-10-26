@@ -4,7 +4,8 @@
 	"description": "A simple API that scrapes a webpage, creates a summary of what is inside it using LLM, and delivers it to the user.",
 	"scripts": {
 		"dev": "wrangler dev",
-		"deploy": "wrangler deploy --minify"
+		"deploy": "wrangler deploy --minify",
+		"lint": "prettier --check . && eslint . && tsc"
 	},
 	"author": "thisjt",
 	"authorUrl": "https://thisjt.me",
