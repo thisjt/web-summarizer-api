@@ -23,6 +23,7 @@ export const JobDetails = z
 		}),
 		summary: z
 			.string()
+			.nullable()
 			.optional()
 			.openapi({
 				title: 'Summary',
@@ -34,13 +35,13 @@ export const JobDetails = z
 					"coordinate the Internet's globally unique identifiers, and the IANA is used to register and " +
 					'transfer domain names.',
 			}),
-		summary_logs: z.string().optional().openapi({
+		summary_logs: z.string().nullable().optional().openapi({
 			title: 'Job Summary Logs',
 			description: 'Shows logs generated during the summarizing of the page. Used for debugging purposes.',
 			type: 'string',
 			example: '7:16:51 AM: Starting job id 68\n7:16:51 AM: Scraping page\n7:16:51 AM: Opening browser',
 		}),
-		summary_error_message: z.string().optional().openapi({
+		summary_error_message: z.string().nullable().optional().openapi({
 			title: 'Job Summary Error',
 			description: "If something failed during the summarizing of the page, you'll see the reason why here.",
 			type: 'string',
@@ -52,13 +53,13 @@ export const JobDetails = z
 			type: 'number',
 			example: 1728624263992,
 		}),
-		started: z.coerce.number().optional().openapi({
+		started: z.coerce.number().nullable().optional().openapi({
 			title: 'Time Started (UNIX_TIMESTAMP)',
 			description: 'The time the job was picked up by the queue and started.',
 			type: 'number',
 			example: 1728624270451,
 		}),
-		finished: z.coerce.number().optional().openapi({
+		finished: z.coerce.number().nullable().optional().openapi({
 			title: 'Time Finishe (UNIX_TIMESTAMP)d',
 			description: 'The time the job was finished.',
 			type: 'number',
