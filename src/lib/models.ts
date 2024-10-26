@@ -81,3 +81,12 @@ export const JobCreate = z
 		}),
 	})
 	.openapi('Create Job');
+
+export const IdSchema = z.object({
+	id: z.coerce.number({ message: 'Invalid job id' }).openapi({
+		title: 'Job ID',
+		description: 'Specify this parameter to grab the details of your Job ID.',
+		type: 'number',
+		example: 68,
+	}),
+});

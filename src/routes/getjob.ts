@@ -1,5 +1,5 @@
 import app from '../lib/app';
-import { z, createRoute } from '@hono/zod-openapi';
+import { createRoute } from '@hono/zod-openapi';
 import { jsonContent } from 'stoker/openapi/helpers';
 import { createErrorSchema } from 'stoker/openapi/schemas';
 import { internalServerErrorSchema, notFoundSchema, unauthorizedSchema } from '../lib/constants';
@@ -8,15 +8,7 @@ import { JobDetails } from '../lib/models';
 import * as StatusCodes from 'stoker/http-status-codes';
 import * as StatusPhrases from 'stoker/http-status-phrases';
 import prisma from '../lib/prisma';
-
-const IdSchema = z.object({
-	id: z.coerce.number({ message: 'Invalid job id' }).openapi({
-		title: 'Job ID',
-		description: 'Specify this parameter to grab the details of your Job ID.',
-		type: 'number',
-		example: 68,
-	}),
-});
+import { IdSchema } from '../lib/models';
 
 const route = createRoute({
 	method: 'get',
