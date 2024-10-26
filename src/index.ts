@@ -1,15 +1,17 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import getjob from './routes/getjob';
-import postjob from './routes/postjob';
 import { mountOpenApi } from './lib/openapi';
 import auth from './lib/auth';
 import { NOT_FOUND } from 'stoker/http-status-phrases';
+
+import getalljobs from './routes/getalljobs';
+import getjob from './routes/getjob';
+import postjob from './routes/postjob';
 
 const app = new OpenAPIHono();
 
 app.route('/', auth);
 
-const routes = [getjob, postjob];
+const routes = [getalljobs, getjob, postjob];
 
 routes.forEach((route) => app.route('/', route));
 
