@@ -6,7 +6,7 @@ compatibility_flags = [ "nodejs_compat" ]
 [[d1_databases]]
 binding = "DB"
 database_name = "web-summarizer-api"
-database_id = "f5093090-a5ab-45df-aff1-22f961c03868"
+database_id = "e4d5f617-9412-45f4-8b77-e8629e421b48"
 
 [observability]
 enabled = true
