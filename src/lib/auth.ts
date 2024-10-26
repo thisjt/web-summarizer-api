@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { z } from '@hono/zod-openapi';
-import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from 'stoker/http-status-phrases';
+import * as StatusPhrases from 'stoker/http-status-phrases';
+import * as StatusCodes from 'stoker/http-status-codes';
 import type { Bindings } from './types';
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>();
@@ -30,9 +31,9 @@ const auth = app.use('/*', async (c, next) => {
 	const token = c.req.query('token');
 	const parsedToken = TokenSchema.safeParse({ token });
 
-	if (!c.env?.TOKEN) return c.json({ message: INTERNAL_SERVER_ERROR });
-	if (!parsedToken.data) return c.json(parsedToken.error);
-	if (parsedToken.data.token !== c.env.TOKEN) return c.json({ message: UNAUTHORIZED });
+	if (!c.env?.TOKEN) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	if (!parsedToken.data) return c.json(parsedToken.error, StatusCodes.BAD_REQUEST);
+	if (parsedToken.data.token !== c.env.TOKEN) return c.json({ message: StatusPhrases.UNAUTHORIZED }, StatusCodes.UNAUTHORIZED);
 
 	console.log('hey', c.req.path);
 
