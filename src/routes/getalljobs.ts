@@ -11,6 +11,7 @@ import prisma from '../lib/prisma';
 const route = createRoute({
 	method: 'get',
 	path: '/jobs',
+	description: 'Gets all job status and details.',
 	request: {
 		query: TokenSchema,
 	},

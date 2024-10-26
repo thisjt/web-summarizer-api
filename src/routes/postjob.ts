@@ -12,6 +12,7 @@ import { INTERNAL_SERVER_ERROR } from 'stoker/http-status-phrases';
 const route = createRoute({
 	method: 'post',
 	path: '/jobs',
+	description: 'Creates a web summarizing job using the specified url. Returns the newly created job. You may use the id of this job to GET job status and details.',
 	request: {
 		body: jsonContent(JobCreate, 'Create a Job'),
 		query: TokenSchema,

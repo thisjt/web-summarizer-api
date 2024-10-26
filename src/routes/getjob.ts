@@ -13,6 +13,7 @@ import { IdSchema } from '../lib/models';
 const route = createRoute({
 	method: 'get',
 	path: '/jobs/{id}',
+	description: 'Gets the job status and details of the job id specified.',
 	request: {
 		params: IdSchema,
 		query: TokenSchema,
