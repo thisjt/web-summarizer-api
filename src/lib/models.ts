@@ -68,6 +68,8 @@ export const JobDetails = z
 	})
 	.openapi('Job');
 
+export const MultipleJobDetails = z.array(JobDetails);
+
 export const JobCreate = z
 	.object({
 		url: z.string().startsWith('https://').openapi({
