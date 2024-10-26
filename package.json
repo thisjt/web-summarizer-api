@@ -5,7 +5,11 @@
 	"scripts": {
 		"dev": "wrangler dev",
 		"deploy": "wrangler deploy --minify",
-		"lint": "prettier --check . && eslint . && tsc"
+		"lint": "prettier --check . && eslint . && tsc",
+		"cf-d1-generate": "prisma generate",
+		"cf-d1-create": "prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/####_###_what_changed_###.sql (copypaste)",
+		"cf-d1-local": "wrangler d1 migrations apply imposs-manage --local",
+		"cf-d1-remote": "wrangler d1 migrations apply imposs-manage --remote"
 	},
 	"author": "thisjt",
 	"authorUrl": "https://thisjt.me",
