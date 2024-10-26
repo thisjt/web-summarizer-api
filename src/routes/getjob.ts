@@ -20,7 +20,7 @@ const IdSchema = z.object({
 
 const route = createRoute({
 	method: 'get',
-	path: '/job/{id}',
+	path: '/jobs/{id}',
 	request: {
 		params: IdSchema,
 		query: TokenSchema,
