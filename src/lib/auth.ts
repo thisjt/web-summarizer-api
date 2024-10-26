@@ -18,8 +18,8 @@ export const TokenSchema = z.object({
 		title: 'Authentication Token',
 		description: 'Token used to access this API.',
 		type: 'string',
-		format: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-		example: 'mYpoDaKd5RNTbYceRgKD9b3gAymKqYBk',
+		format: 'xxxxxxxxxxxxxxxxxxxx',
+		example: 'abcde12345abcde12345',
 	}),
 });
 
