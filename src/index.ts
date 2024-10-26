@@ -9,6 +9,10 @@ const routes = [getjob, postjob];
 
 routes.forEach((route) => app.route('/', route));
 
+app.get('/', (c) => {
+	return c.redirect('/documentation', 302);
+});
+
 mountOpenApi(app);
 
 export default app;
