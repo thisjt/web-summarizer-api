@@ -6,12 +6,13 @@ import { NOT_FOUND } from 'stoker/http-status-phrases';
 import getalljobs from './routes/getalljobs';
 import getjob from './routes/getjob';
 import postjob from './routes/postjob';
+import executejob from './routes/executejob';
 
 const app = new OpenAPIHono();
 
 app.route('/', auth);
 
-const routes = [getalljobs, getjob, postjob];
+const routes = [getalljobs, getjob, postjob, executejob];
 
 routes.forEach((route) => app.route('/', route));
 
