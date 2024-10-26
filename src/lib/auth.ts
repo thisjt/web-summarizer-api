@@ -1,10 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { z } from '@hono/zod-openapi';
 import { INTERNAL_SERVER_ERROR, UNAUTHORIZED } from 'stoker/http-status-phrases';
-
-type Bindings = {
-	TOKEN: string;
-};
+import type { Bindings } from './types';
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
