@@ -77,7 +77,7 @@ export const JobDetails = z.object({
 
 const route = createRoute({
 	method: 'get',
-	path: '/job/{id}?token={token}',
+	path: '/job/{id}',
 	request: {
 		params: IdSchema,
 		query: TokenSchema,
@@ -86,14 +86,18 @@ const route = createRoute({
 		[StatusCodes.OK]: jsonContent(JobDetails, 'Job Retrieved'),
 		[StatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, 'Job ID not found'),
 		[StatusCodes.UNAUTHORIZED]: jsonContent(unauthorizedSchema, 'Unauthorized'),
+		[StatusCodes.BAD_REQUEST]: jsonContent(createErrorSchema(IdSchema), 'Error'),
 	},
 });
 
 const getjob = app.openapi(route, async (c) => {
+	const { token } = c.req.valid('query');
+	const { id } = c.req.valid('param');
+
 	return c.json(
 		{
-			id: 3,
-			url: 'https://asdads',
+			id,
+			url: 'https:// - ' + token,
 			status: 'asd',
 			timestamp: 123123,
 		},
