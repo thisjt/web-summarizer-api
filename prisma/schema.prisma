@@ -1,11 +1,12 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["omitApi"]
+    previewFeatures = ["omitApi", "driverAdapters"]
 }
 
 datasource db {
     provider = "sqlite"
-    url      = env("DATABASE_URL")
+    // not that useful as local db will be from wrangler miniflare d1 db (.wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.db)
+    url      = "file:./db.db"
 }
 
 model Jobs {
