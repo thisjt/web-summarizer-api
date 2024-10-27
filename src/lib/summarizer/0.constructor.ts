@@ -1,8 +1,21 @@
+import type { PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { Bindings } from '../types';
 
-export type ReturnStructure = { success: true; error: null; data: { output: string } } | { success: false; error: { message: string; code: number }; data: null };
+type PrismaModels = {
+	[M in Prisma.ModelName]: Exclude<Awaited<ReturnType<PrismaClient[Uncapitalize<M>]['findUnique']>>, null>;
+};
+
+type ReturnStructureNoData<T> = { success: true; error: null; data: T } | { success: false; error: { message: string; code: number }; data: null };
+export type ReturnStructure = ReturnStructureNoData<{ output: string }>;
 
 export type Status = 'queue' | 'processing' | 'completed' | 'failed';
+
+export interface JobRU {
+	// no C(reate), D(elete)
+	readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>>;
+	updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs']> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>>;
+}
 
 export interface ChangeStatus {
 	changeStatus(status: Status, error?: ReturnStructure['error']): Promise<ReturnStructure>;
@@ -57,6 +70,8 @@ export class Summarizer extends Logger {
 	sumSummarizer: SumSummarizer | null = null;
 	sumStatus: ChangeStatus | null = null;
 
+	sumJobRU: JobRU | null = null;
+
 	bindings: Bindings | null = null;
 
 	constructor(params: { url?: string; bindings?: Bindings; id?: number }) {
@@ -80,6 +95,11 @@ export class Summarizer extends Logger {
 	setStatusChanger(sumStatus: ChangeStatus) {
 		this.sumStatus = sumStatus;
 	}
+
+	setJobRU(sumJobRU: JobRU) {
+		this.sumJobRU = sumJobRU;
+	}
+	async readJob() {}
 
 	/**
 	 * Changes the status of the job being processed. Returns
