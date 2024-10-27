@@ -7,11 +7,14 @@ import { TokenSchema } from '../lib/auth';
 import { JobDetails } from '../lib/models';
 import * as StatusCodes from 'stoker/http-status-codes';
 import * as StatusPhrases from 'stoker/http-status-phrases';
-import prisma from '../lib/prisma';
 import { IdSchema } from '../lib/models';
-import puppeteer from '@cloudflare/puppeteer';
 
-const SHORT_PARAGRAPH = 100; //characters
+import { Summarizer } from '../lib/summarizer/0.constructor';
+import { BrowserRendererDependency } from '../lib/summarizer/3.fetcher';
+import { JobReadUpdateDependency } from '../lib/summarizer/1.job';
+import { ChangeStatusDependency } from '../lib/summarizer/2.status';
+import { ParserDependency } from '../lib/summarizer/4.parser';
+import { SummarizeDependency } from '../lib/summarizer/5.summarizer';
 
 const route = createRoute({
 	method: 'get',
@@ -33,94 +36,72 @@ const route = createRoute({
 const executejob = app.openapi(route, async (c) => {
 	const { id } = c.req.valid('param');
 
-	const dbselect = {
-		id: true,
-		url: true,
-		status: true,
-		summary: true,
-		summary_logs: true,
-		summary_error_message: true,
-		timestamp: true,
-		started: true,
-		finished: true,
-	};
+	const executeJob = new Summarizer({ url: '', id, bindings: c.env });
+	if (!executeJob.options) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
 
-	let result;
-	try {
-		if (id) {
-			result = await prisma(c.env.DB).jobs.findFirst({
-				select: dbselect,
-				where: { id },
-			});
-		} else {
-			result = await prisma(c.env.DB).jobs.findFirst({
-				select: dbselect,
-				where: { status: 'queue' },
-			});
-		}
-	} catch (e) {
-		console.error(e);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	const JobReadUpdate = new JobReadUpdateDependency(executeJob.options);
+	executeJob.setJobRU(JobReadUpdate);
+	const jobData = await executeJob.readJob({});
+	if (!jobData.success) {
+		executeJob.error('Unable to pull job details', jobData.error);
+		throw Error('No bindings specified');
 	}
 
-	if (!result) return c.json({ message: StatusPhrases.NOT_FOUND }, StatusCodes.NOT_FOUND);
+	const StatusUpdate = new ChangeStatusDependency(executeJob.options);
+	executeJob.setStatusChanger(StatusUpdate);
+	const processingStatus = executeJob.setStatus('processing');
+	const updatedJobStarted = executeJob.updateJob({ id, data: { started: new Date().getTime() } });
 
-	const ParsedJobDetails = JobDetails.safeParse(result);
-	if (!ParsedJobDetails.data) {
-		console.error('Failed Zod Values from database:', result, ParsedJobDetails.error);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	const BrowserFetcher = new BrowserRendererDependency(executeJob.options);
+	executeJob.setFetcher(BrowserFetcher);
+	const fetchStep = await executeJob.fetch();
+	if (!fetchStep.success) {
+		executeJob.error('Unable to fetch html from url', executeJob.url);
+		await Promise.all([processingStatus, updatedJobStarted]);
+		executeJob.setStatus('failed', { message: 'Unable to fetch html from url', code: 4 });
+		throw Error('Unable to fetch html from url');
 	}
 
-	// Step 1. Set Status
-	try {
-		// await prisma(c.env.DB).jobs.update({
-		// 	data: {
-		// 		status: 'processing',
-		// 		started: new Date().getTime(),
-		// 	},
-		// 	where: { id: result.id },
-		// });
-	} catch (e) {
-		console.error(e);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	const HTMLParser = new ParserDependency(executeJob.options);
+	executeJob.setParser(HTMLParser);
+	const parsedHtml = await executeJob.parse();
+	if (!parsedHtml.success) {
+		executeJob.error('Unable parse html from rawHtml', executeJob.url);
+		await Promise.all([processingStatus, updatedJobStarted]);
+		executeJob.setStatus('failed', { message: 'Unable parse html from rawHtml', code: 4 });
+		throw Error('Unable parse html from rawHtml');
 	}
 
-	// Step 2. Load URL to Puppeteer
-	let htmlString = '';
-	try {
-		const browser = await puppeteer.launch(c.env.BROWSER);
-		const page = await browser.newPage();
-		await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15');
-		await page.goto(result.url, { waitUntil: 'load', timeout: 15000 });
-		const bodyHandle = await page.$('body');
-		const html = await page.evaluate((body) => {
-			let pData = '';
-			/**
-			 * Grabbing text inside the <p> tags are better than trying to filter out
-			 * unwanted elements. This is a design choice, but it can be better. We do lose
-			 * a bit of potentially useful data for summarization though.
-			 */
-			[...(body?.querySelectorAll('p') || [])].forEach((p) => {
-				pData += p.textContent + ' ';
-			});
-			return pData;
-		}, bodyHandle);
-		htmlString = html.replace(/<\/?[^>]+(>|$)/g, '');
-		await browser.close();
-	} catch (e) {
-		console.error(e);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	const LLMSummarizer = new SummarizeDependency(executeJob.options);
+	executeJob.setSummarize(LLMSummarizer);
+
+	const summarizedPage = await executeJob.summarize();
+	if (!summarizedPage.success) {
+		executeJob.error('Unable to get summary of parsed html', executeJob.url);
+		await Promise.all([processingStatus, updatedJobStarted]);
+		executeJob.setStatus('failed', { message: 'Unable parse html from rawHtml', code: 4 });
+		throw Error('Unable parse html from rawHtml');
 	}
 
-	// Step 3. Clean up HTML String
-	const htmlStringExploded = htmlString.split('\n').map((line) => line.replace(/\s+/g, ' ').trim());
-	htmlStringExploded.forEach((v, i) => (htmlStringExploded[i] = htmlStringExploded[i].trim()));
-	const htmlFilterShortStrings = htmlStringExploded.filter((str) => str.length > SHORT_PARAGRAPH);
-	htmlString = htmlFilterShortStrings.join(' ');
+	const updatedJob = await executeJob.updateJob({
+		id,
+		data: {
+			summary: summarizedPage.data.output,
+			finished: new Date().getTime(),
+		},
+	});
 
-	console.log(htmlString);
+	if (!updatedJob.success) {
+		executeJob.error('Failed to update job in database', executeJob.url);
+		await Promise.all([processingStatus, updatedJobStarted]);
+		executeJob.setStatus('failed', { message: 'Failed to update job in database', code: 4 });
+		throw Error('Failed to update job in database');
+	}
 
-	return c.json(ParsedJobDetails.data, StatusCodes.OK);
+	await Promise.all([processingStatus]);
+	executeJob.setStatus('completed');
+
+	return c.json({ id: 1, url: '', status: '', summary: summarizedPage.data.output, timestamp: 1 }, StatusCodes.OK);
 });
 
 export default executejob;
