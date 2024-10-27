@@ -26,6 +26,7 @@
 		"@prisma/adapter-d1": "^5.21.1",
 		"@prisma/client": "^5.21.1",
 		"@scalar/hono-api-reference": "^0.5.156",
+		"cheerio": "^1.0.0",
 		"eslint": "^9.13.0",
 		"eslint-config-prettier": "^9.1.0",
 		"globals": "^15.11.0",
