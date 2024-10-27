@@ -1,7 +1,9 @@
-import { ChangeStatus } from './0.constructor';
+import prisma from '../prisma';
+import { ChangeStatus, Summarizer } from './0.constructor';
 
-export const StatusModifier: ChangeStatus = {
-	async changeStatus(prisma, id, status, error) {
+export class ChangeStatusDependency extends Summarizer {
+	changeStatus: ChangeStatus['changeStatus'] = async (status, error) => {
+		const [bindings, id] = [this.bindings, this.id];
 		let dataUpdate;
 		switch (status) {
 			case 'failed':
@@ -19,7 +21,8 @@ export const StatusModifier: ChangeStatus = {
 		}
 
 		try {
-			await prisma.jobs.update({
+			if (!bindings) throw Error('No bindings found');
+			await prisma(bindings.DB).jobs.update({
 				data: {
 					status,
 					...dataUpdate,
@@ -30,5 +33,5 @@ export const StatusModifier: ChangeStatus = {
 		} catch {
 			return { success: false, error: { code: 1, message: 'Error changing status' }, data: null };
 		}
-	},
-};
+	};
+}
