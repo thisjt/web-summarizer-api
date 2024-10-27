@@ -5,7 +5,7 @@ export type ReturnStructure = { success: true; error: null; data: { output: stri
 export type Status = 'queue' | 'processing' | 'completed' | 'failed';
 
 export interface ChangeStatus {
-	changeStatus(bindings: Bindings | null, id: number, status: Status, error?: ReturnStructure['error']): Promise<ReturnStructure>;
+	changeStatus(status: Status, error?: ReturnStructure['error']): Promise<ReturnStructure>;
 }
 
 export interface SumFetcher {
@@ -57,16 +57,18 @@ export class Summarizer extends Logger {
 	sumSummarizer: SumSummarizer | null = null;
 	sumStatus: ChangeStatus | null = null;
 
-	#bindings: Bindings | null = null;
+	bindings: Bindings | null = null;
 
-	constructor(url: string, bindings?: Bindings) {
+	constructor(params: { url?: string; bindings?: Bindings; id?: number }) {
 		super();
-		if (!(typeof url === 'string' ? url : '').length) {
-			this.error('Url must not be empty');
-			throw Error('Url must not be empty');
-		}
-		if (bindings) this.#bindings = bindings;
-		this.url = url;
+		const { url, bindings, id } = params;
+		if (url) this.url = url;
+		if (bindings) this.bindings = bindings;
+		if (id) this.id = id;
+	}
+
+	setUrl(url: string) {
+		if ((typeof url === 'string' ? url : '').length) this.url = url;
 	}
 
 	setLogger(logger: Logger) {
@@ -90,7 +92,7 @@ export class Summarizer extends Logger {
 			this.error('No status changer specified');
 			throw Error('No status changer specified');
 		}
-		const result = await this.sumStatus.changeStatus(this.#bindings, this.id, status, error);
+		const result = await this.sumStatus.changeStatus(status, error);
 		if (result.success) {
 			this.status = status;
 			return result;
