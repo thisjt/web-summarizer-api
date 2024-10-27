@@ -22,7 +22,6 @@ export class ChangeStatusDependency extends Summarizer {
 
 		try {
 			if (!bindings) throw Error('No bindings found');
-			console.log('XXXXXXXXXX', status, dataUpdate, id);
 			await prisma(bindings.DB).jobs.update({
 				data: {
 					status,
