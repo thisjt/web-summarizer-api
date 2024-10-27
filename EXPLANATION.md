@@ -63,7 +63,9 @@ _We're now using Cloudflare D1 as our database_
 
 _We're only running lint tests. Will implement integration tests later._
 
-7. In order to save Cloudflare AI API calls, it would be a good addition to have an option for the user to provide a timestamp or a flag to fetch from database the summary if it already exists. It is possible that that URL has already been requested by a different user before. As long as the user requesting that URL does not need the latest summary of that page, then the result in the db would most likely suffice without re-scraping the page.
+In order to save Cloudflare AI API calls, it would be a good addition to have an option for the user to provide a timestamp or a flag to fetch from database the summary if it already exists. It is possible that that URL has already been requested by a different user before. As long as the user requesting that URL does not need the latest summary of that page, then the result in the db would most likely suffice without re-scraping the page.
+
+My implementation of this for this application needs some work, especially on the classes inside `src/lib/summarizer/*`. The classes created and injected is inefficient as I am extending the entire Summarizer class to a new class, and then injecting it back to the Summarizer class. Isolating the required variables during initialization and putting it in a different class for that to be extended would be the better call here, so that the entire class does not get duplicated.
 
 # Other Things for Discussion
 
@@ -76,6 +78,8 @@ Knowing the requirements of a client is of utmost importance. Everything needs t
 In this case, I have already tried out puppeteer, but its use for me is more towards browser testing and not scraping. It's a good thing the assessment provided a suggestion of using this, or I could have steered in a different direction, possibly going towards using `fetch` and `JSDOM`, which would be much harder, although that does make it less dependent on an actual browser for rendering.
 
 For Prisma, not much reason, it's usually my go-to solution when I need a database/ORM.
+
+Dependency Injection is such a very nice mindset to have, as you can isolate individual modules and test them one by one by mocking. It's also possible to have multiple similar modules that you can swap on each other depending on the situation or input.
 
 ~~I was originally debating whether to use `hono` or `express`, but I eventually settled to using express as I'm way more familiar to it compared to hono. Hono has a lot more fancy plugins compared to express, but express is just easier to use and implement in my opinion. Maybe in the future when I have a bit more time, I'll play with it.~~
 
