@@ -50,15 +50,15 @@ const getjob = app.openapi(route, async (c) => {
 		});
 	} catch (e) {
 		console.error(e);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR + '_03' }, StatusCodes.INTERNAL_SERVER_ERROR);
 	}
 
-	if (!result) return c.json({ message: StatusPhrases.NOT_FOUND }, StatusCodes.NOT_FOUND);
+	if (!result) return c.json({ message: StatusPhrases.NOT_FOUND + '_02' }, StatusCodes.NOT_FOUND);
 
 	const zodded = JobDetails.safeParse(result);
 	if (!zodded.data) {
 		console.error('Failed Zod Values from database:', result, zodded.error);
-		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+		return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR + '_04' }, StatusCodes.INTERNAL_SERVER_ERROR);
 	}
 
 	return c.json(zodded.data, StatusCodes.OK);

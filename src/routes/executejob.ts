@@ -39,7 +39,7 @@ const executejob = app.openapi(route, async (c) => {
 	const promisesToWait: Promise<unknown>[] = [];
 
 	const executeJob = new Summarizer({ url: '', id, bindings: c.env });
-	if (!executeJob.options) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	if (!executeJob.options) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR + '_01' }, StatusCodes.INTERNAL_SERVER_ERROR);
 
 	const JobReadUpdate = new JobReadUpdateDependency(executeJob.options);
 	executeJob.setJobRU(JobReadUpdate);

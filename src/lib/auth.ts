@@ -31,7 +31,7 @@ const auth = app.use('/*', async (c, next) => {
 	const token = c.req.query('token');
 	const parsedToken = TokenSchema.safeParse({ token });
 
-	if (!c.env?.TOKEN) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+	if (!c.env?.TOKEN) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR + '_00' }, StatusCodes.INTERNAL_SERVER_ERROR);
 	if (!parsedToken.data) return c.json(parsedToken.error, StatusCodes.BAD_REQUEST);
 	if (parsedToken.data.token !== c.env.TOKEN) return c.json({ message: StatusPhrases.UNAUTHORIZED }, StatusCodes.UNAUTHORIZED);
 

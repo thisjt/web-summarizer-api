@@ -47,7 +47,7 @@ const postjob = app.openapi(route, async (c) => {
 		});
 	} catch (e) {
 		console.error(e);
-		return c.json({ message: INTERNAL_SERVER_ERROR }, 500);
+		return c.json({ message: INTERNAL_SERVER_ERROR + '_05' }, 500);
 	}
 
 	return c.json({ ...result, ...{ timestamp } }, StatusCodes.OK);
