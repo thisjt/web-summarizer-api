@@ -7,7 +7,7 @@ import getalljobs from './routes/getalljobs';
 import getjob from './routes/getjob';
 import postjob from './routes/postjob';
 import executejob from './routes/executejob';
-import { ScheduledController } from '@cloudflare/workers-types';
+import { ExecutionContext, ScheduledController } from '@cloudflare/workers-types';
 import { Bindings } from './lib/types';
 
 const app = new OpenAPIHono();
@@ -26,7 +26,7 @@ app.all('*', (c) => {
 
 export default {
 	fetch: app.fetch,
-	async scheduled(controller: ScheduledController, env: Bindings) {
-		return fetch(`https://summarizer.thisjt.me/execute/0?cron&token=${env.TOKEN}`);
+	async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
+		ctx.waitUntil(fetch(`https://summarizer.thisjt.me/execute/0?cron&token=${env.TOKEN}`));
 	},
 };
