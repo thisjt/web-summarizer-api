@@ -85,9 +85,11 @@ For Prisma, not much reason, it's usually my go-to solution when I need a databa
 
 Dependency Injection is such a very nice mindset to have, as you can isolate individual modules and test them one by one by mocking. It's also possible to have multiple similar modules that you can swap on each other depending on the situation or input.
 
+There is a GitHub action that runs and lints the entire project every time there is a typescript file being modified and committed. You may check the script in `.github/workflows/test.yml` on how that is done.
+
 ~~I was originally debating whether to use `hono` or `express`, but I eventually settled to using express as I'm way more familiar to it compared to hono. Hono has a lot more fancy plugins compared to express, but express is just easier to use and implement in my opinion. Maybe in the future when I have a bit more time, I'll play with it.~~
 
-_We're now using hono with the OpenAPI plugin/middleware_
+_We're now using hono with the OpenAPI plugin/middleware._
 
 ---
 
