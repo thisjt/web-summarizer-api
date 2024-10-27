@@ -19,7 +19,7 @@ import { SummarizeDependency } from '../lib/summarizer/5.summarizer';
 const route = createRoute({
 	method: 'get',
 	path: '/execute/{id}',
-	description: 'Executes the specified job. If id is 0, the worker will pick the oldest job and executes it.',
+	description: 'Executes the specified job. If id is 0, the worker will pick the oldest job and executes it. This route gets executed every minute as a CRON job.',
 	request: {
 		params: IdSchema,
 		query: TokenSchema,
