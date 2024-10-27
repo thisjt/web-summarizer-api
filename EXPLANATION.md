@@ -67,6 +67,8 @@ In order to save Cloudflare AI API calls, it would be a good addition to have an
 
 My implementation of this for this application needs some work, especially on the classes inside `src/lib/summarizer/*`. The classes created and injected is inefficient as I am extending the entire Summarizer class to a new class, and then injecting it back to the Summarizer class. Isolating the required variables during initialization and putting it in a different class for that to be extended would be the better call here, so that the entire class does not get duplicated.
 
+Error logging needs some work. As of now, we're solely relying on console.log, which can be seen in the Cloudflare Dashboard, but would be nice to implement the debug/error logging inside the database also so that we will know which step in the process failed if an error happens for every single job executed.
+
 # Other Things for Discussion
 
 There are some comments sprinkled on the source code. However, the code is written in a way so that everything is self-explanatory and does not require comments for clarification.
