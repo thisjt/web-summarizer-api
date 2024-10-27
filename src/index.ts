@@ -21,12 +21,17 @@ routes.forEach((route) => app.route('/', route));
 mountOpenApi(app);
 
 app.all('*', (c) => {
-	return c.json({ message: NOT_FOUND }, 404);
+	return c.json({ message: NOT_FOUND + '_01' }, 404);
 });
 
 export default {
 	fetch: app.fetch,
 	async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {
-		ctx.waitUntil(fetch(`https://summarizer.thisjt.me/execute/0?cron&token=${env.TOKEN}`));
+		ctx.waitUntil(
+			new Promise(async (c) => {
+				await app.request(`/execute/0?token=${env.TOKEN}`, { method: 'GET' }, env);
+				c(null);
+			}),
+		);
 	},
 };
