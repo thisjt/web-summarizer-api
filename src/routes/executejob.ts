@@ -94,7 +94,7 @@ const executejob = app.openapi(route, async (c) => {
 	await Promise.all(promisesToWait);
 	await executeJob.setStatus('completed');
 
-	return c.json({ id, url: '', status: '', summary: summarizedPage.data?.output, timestamp: 1 }, StatusCodes.OK);
+	return c.json(updatedJob.data, StatusCodes.OK);
 });
 
 export default executejob;

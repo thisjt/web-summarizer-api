@@ -14,7 +14,7 @@ export type Status = 'queue' | 'processing' | 'completed' | 'failed';
 export interface JobRU {
 	// no C(reate), D(elete)
 	readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']> | null>>;
-	updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs'] | null> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']> | null>>;
+	updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs'] | null> }): Promise<ReturnStructureNoData<PrismaModels['Jobs']>>;
 }
 
 export interface ChangeStatus {
