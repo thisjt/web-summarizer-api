@@ -1,9 +1,11 @@
+import type { PrismaClient } from '@prisma/client';
+
 export type ReturnStructure = { success: true; error: null; data: { output: string } } | { success: false; error: { message: string; code: number }; data: null };
 
 export type Status = 'queue' | 'processing' | 'completed' | 'failed';
 
 export interface ChangeStatus {
-	changeStatus(status: Status, error?: ReturnStructure['error']): Promise<ReturnStructure>;
+	changeStatus(prisma: PrismaClient, id: number, status: Status, error?: ReturnStructure['error']): Promise<ReturnStructure>;
 }
 
 export interface SumFetcher {
@@ -55,12 +57,15 @@ export class Summarizer extends Logger {
 	sumSummarizer: SumSummarizer | null = null;
 	sumStatus: ChangeStatus | null = null;
 
-	constructor(url: string) {
+	#prisma: PrismaClient | null = null;
+
+	constructor(url: string, prisma?: PrismaClient) {
 		super();
 		if (!(typeof url === 'string' ? url : '').length) {
 			this.error('Url must not be empty');
 			throw Error('Url must not be empty');
 		}
+		if (prisma) this.#prisma = prisma;
 		this.url = url;
 	}
 
@@ -85,7 +90,11 @@ export class Summarizer extends Logger {
 			this.error('No status changer specified');
 			throw Error('No status changer specified');
 		}
-		const result = await this.sumStatus.changeStatus(status, error);
+		if (!this.#prisma) {
+			this.error('No database connection specified');
+			throw Error('No database connection specified');
+		}
+		const result = await this.sumStatus.changeStatus(this.#prisma, this.id, status, error);
 		if (result.success) {
 			this.status = status;
 			return result;
