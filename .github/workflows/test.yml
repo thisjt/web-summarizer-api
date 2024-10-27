@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - 'hono-refactor'
+    paths:
+      - '**.ts'
   workflow_dispatch:
 
 jobs:
