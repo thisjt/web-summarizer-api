@@ -135,7 +135,7 @@ export class Summarizer extends Logger {
 	/**
 	 * Parses the raw HTML string to a properly processed paragraph/string
 	 * @param rawHtml
-	 * @returns {Prommise<ReturnStructure>}
+	 * @returns {Promise<ReturnStructure>}
 	 */
 	async parse(rawHtml?: string): Promise<ReturnStructure> {
 		if (this.parsedHtml) return { success: true, error: null, data: { output: this.parsedHtml } };
@@ -157,6 +157,11 @@ export class Summarizer extends Logger {
 		this.sumSummarizer = sumSummarizer;
 	}
 
+	/**
+	 * Summarizes the properly processed paragraph/string to a summary using an LLM
+	 * @param parsedHtml
+	 * @returns {Promise<ReturnStructure>}
+	 */
 	async summarizer(parsedHtml?: string): Promise<ReturnStructure> {
 		if (this.parsedHtml) return { success: true, error: null, data: { output: this.parsedHtml } };
 		if (!this.sumSummarizer) {
