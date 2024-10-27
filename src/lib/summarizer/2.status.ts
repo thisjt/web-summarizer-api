@@ -1,5 +1,5 @@
 import prisma from '../prisma';
-import { ChangeStatus, Summarizer } from './0.constructor';
+import { type ChangeStatus, Summarizer } from './0.constructor';
 
 export class ChangeStatusDependency extends Summarizer {
 	changeStatus: ChangeStatus['changeStatus'] = async (status, error) => {
