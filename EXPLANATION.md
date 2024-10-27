@@ -69,6 +69,8 @@ My implementation of this for this application needs some work, especially on th
 
 Error logging needs some work. As of now, we're solely relying on console.log, which can be seen in the Cloudflare Dashboard, but would be nice to implement the debug/error logging inside the database also so that we will know which step in the process failed if an error happens for every single job executed.
 
+I'm having the worker run a CRON job every minute, but this could be improved further so that it can continuously run the jobs every time one ends, so that we can maximize how many urls we can handle per given span of time.
+
 # Other Things for Discussion
 
 There are some comments sprinkled on the source code. However, the code is written in a way so that everything is self-explanatory and does not require comments for clarification.
