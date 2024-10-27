@@ -50,6 +50,8 @@ const executejob = app.openapi(route, async (c) => {
 		);
 	if (!jobData.data) return await executeJob.failStep({ message: 'Job not found', code: 5 }, [], [], async (error) => c.json({ message: error.message }, StatusCodes.NOT_FOUND));
 
+	executeJob.options.id = jobData.data.id;
+
 	const StatusUpdate = new ChangeStatusDependency(executeJob.options);
 	executeJob.setStatusChanger(StatusUpdate);
 	promisesToWait.push(executeJob.setStatus('processing'));
