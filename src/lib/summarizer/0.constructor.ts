@@ -99,7 +99,20 @@ export class Summarizer extends Logger {
 	setJobRU(sumJobRU: JobRU) {
 		this.sumJobRU = sumJobRU;
 	}
-	async readJob() {}
+	async readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>> {
+		if (!this.sumJobRU) {
+			this.error('No status changer specified');
+			throw Error('No status changer specified');
+		}
+		return await this.sumJobRU.readJob({ id });
+	}
+	async updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs']> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>> {
+		if (!this.sumJobRU) {
+			this.error('No status changer specified');
+			throw Error('No status changer specified');
+		}
+		return await this.sumJobRU.updateJob({ id, data });
+	}
 
 	/**
 	 * Changes the status of the job being processed. Returns
