@@ -44,9 +44,11 @@ const executejob = app.openapi(route, async (c) => {
 	const JobReadUpdate = new JobReadUpdateDependency(executeJob.options);
 	executeJob.setJobRU(JobReadUpdate);
 	const jobData = await executeJob.readJob({});
-	if (!jobData.success) {
-		return await executeJob.failStep({ message: 'Failed to open jobs database', code: 6 }, [], [], async (error) => c.json({ message: error.message }, 500));
-	}
+	if (!jobData.success)
+		return await executeJob.failStep({ message: 'Failed to open jobs database', code: 6 }, [], [], async (error) =>
+			c.json({ message: error.message }, StatusCodes.INTERNAL_SERVER_ERROR),
+		);
+	if (!jobData.data) return await executeJob.failStep({ message: 'Job not found', code: 5 }, [], [], async (error) => c.json({ message: error.message }, StatusCodes.NOT_FOUND));
 
 	const StatusUpdate = new ChangeStatusDependency(executeJob.options);
 	executeJob.setStatusChanger(StatusUpdate);
@@ -58,7 +60,7 @@ const executejob = app.openapi(route, async (c) => {
 	const fetchStep = await executeJob.fetch();
 	if (!fetchStep.success)
 		return await executeJob.failStep({ message: 'Unable to fetch rawHTML from URL', code: 7 }, [executeJob.url], promisesToWait, async (error) =>
-			c.json({ message: error.message }, 500),
+			c.json({ message: error.message }, StatusCodes.INTERNAL_SERVER_ERROR),
 		);
 
 	const HTMLParser = new ParserDependency(executeJob.options);
@@ -66,7 +68,7 @@ const executejob = app.openapi(route, async (c) => {
 	const parsedHtml = await executeJob.parse();
 	if (!parsedHtml.success)
 		return await executeJob.failStep({ message: 'Unable to parseHTML from rawHTML', code: 8 }, [executeJob.url], promisesToWait, async (error) =>
-			c.json({ message: error.message }, 500),
+			c.json({ message: error.message }, StatusCodes.INTERNAL_SERVER_ERROR),
 		);
 
 	const LLMSummarizer = new SummarizeDependency(executeJob.options);
@@ -75,7 +77,7 @@ const executejob = app.openapi(route, async (c) => {
 	const summarizedPage = await executeJob.summarize();
 	if (!summarizedPage.success)
 		return await executeJob.failStep({ message: 'Unable to get summary from LLM from parseHTML', code: 9 }, [executeJob.url], promisesToWait, async (error) =>
-			c.json({ message: error.message }, 500),
+			c.json({ message: error.message }, StatusCodes.INTERNAL_SERVER_ERROR),
 		);
 
 	const updatedJob = await executeJob.updateJob({
@@ -88,13 +90,13 @@ const executejob = app.openapi(route, async (c) => {
 
 	if (!updatedJob.success)
 		return await executeJob.failStep({ message: 'Unable to update job in database', code: 10 }, [executeJob.url, id], promisesToWait, async (error) =>
-			c.json({ message: error.message }, 500),
+			c.json({ message: error.message }, StatusCodes.INTERNAL_SERVER_ERROR),
 		);
 
 	await Promise.all(promisesToWait);
-	await executeJob.setStatus('completed');
+	const status = await executeJob.setStatus('completed');
 
-	return c.json(updatedJob.data, StatusCodes.OK);
+	return c.json({ ...updatedJob.data, ...{ status: status.data?.output || 'completed' } }, StatusCodes.OK);
 });
 
 export default executejob;

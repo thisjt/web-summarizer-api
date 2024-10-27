@@ -13,11 +13,13 @@ const dbselect = {
 	finished: true,
 };
 export class JobReadUpdateDependency extends Summarizer {
-	readJob: JobRU['readJob'] = async ({ id } = { id: this.id }) => {
+	readJob: JobRU['readJob'] = async ({ id }) => {
 		if (!this.bindings) {
 			this.error('No bindings specified', this.bindings);
 			throw Error('No bindings specified');
 		}
+
+		id = id || this.id;
 
 		let result;
 		try {
@@ -36,6 +38,7 @@ export class JobReadUpdateDependency extends Summarizer {
 			this.error('Error readJob query', e);
 			return { success: false, error: { code: 2, message: 'Error readJob query' }, data: null };
 		}
+		if (result) this.id = result.id;
 		return { success: true, error: null, data: result };
 	};
 	updateJob: JobRU['updateJob'] = async ({ id, data } = { id: this.id, data: null }) => {
