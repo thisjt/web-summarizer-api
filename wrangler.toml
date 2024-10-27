@@ -17,3 +17,6 @@ binding = "BROWSER"
 
 [ai]
 binding = "AI"
+
+[triggers]
+crons = ["*/1 * * * *"]

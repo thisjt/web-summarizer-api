@@ -7,6 +7,8 @@ import getalljobs from './routes/getalljobs';
 import getjob from './routes/getjob';
 import postjob from './routes/postjob';
 import executejob from './routes/executejob';
+import { ScheduledController } from '@cloudflare/workers-types';
+import { Bindings } from './lib/types';
 
 const app = new OpenAPIHono();
 
@@ -22,4 +24,9 @@ app.all('*', (c) => {
 	return c.json({ message: NOT_FOUND }, 404);
 });
 
-export default app;
+export default {
+	fetch: app.fetch,
+	async scheduled(controller: ScheduledController, env: Bindings) {
+		return fetch(`https://summarizer.thisjt.me/execute/0?cron&token=${env.TOKEN}`);
+	},
+};
