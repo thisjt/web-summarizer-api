@@ -18,7 +18,7 @@ model Jobs {
     summary               String?
     summary_logs          String?
     summary_error_message String?
-    timestamp             BigInt
-    started               BigInt?
-    finished              BigInt?
+    timestamp             Int
+    started               Int?
+    finished              Int?
 }
