@@ -13,8 +13,8 @@ export type Status = 'queue' | 'processing' | 'completed' | 'failed';
 
 export interface JobRU {
 	// no C(reate), D(elete)
-	readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>>;
-	updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs']> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>>;
+	readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']> | null>>;
+	updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs'] | null> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']> | null>>;
 }
 
 export interface ChangeStatus {
@@ -29,7 +29,7 @@ export interface SumParser {
 	parse(rawHtml?: string): Promise<ReturnStructure>;
 }
 
-export interface SumSummarizer {
+export interface SumSummarize {
 	summarize(parsedHtml?: string): Promise<ReturnStructure>;
 }
 
@@ -67,12 +67,12 @@ export class Summarizer extends Logger {
 
 	sumFetcher: SumFetcher | null = null;
 	sumParser: SumParser | null = null;
-	sumSummarizer: SumSummarizer | null = null;
+	sumSummarize: SumSummarize | null = null;
 	sumStatus: ChangeStatus | null = null;
 
 	sumJobRU: JobRU | null = null;
-
 	bindings: Bindings | null = null;
+	options: { url?: string; bindings?: Bindings; id?: number } | null = null;
 
 	constructor(params: { url?: string; bindings?: Bindings; id?: number }) {
 		super();
@@ -80,6 +80,8 @@ export class Summarizer extends Logger {
 		if (url) this.url = url;
 		if (bindings) this.bindings = bindings;
 		if (id) this.id = id;
+
+		this.options = { url, bindings, id };
 	}
 
 	setUrl(url: string) {
@@ -99,20 +101,26 @@ export class Summarizer extends Logger {
 	setJobRU(sumJobRU: JobRU) {
 		this.sumJobRU = sumJobRU;
 	}
-	async readJob({ id }: { id?: number }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>> {
+	readJob: JobRU['readJob'] = async ({ id } = { id: this.id }) => {
 		if (!this.sumJobRU) {
 			this.error('No status changer specified');
 			throw Error('No status changer specified');
 		}
-		return await this.sumJobRU.readJob({ id });
-	}
-	async updateJob({ id, data }: { id?: number; data: Partial<PrismaModels['Jobs']> }): Promise<ReturnStructureNoData<Partial<PrismaModels['Jobs']>>> {
+		const job = await this.sumJobRU.readJob({ id });
+		if (job.success && job.data) {
+			this.id = job.data.id || this.id;
+			this.url = job.data.url || this.url;
+			this.status = (job.data.status as Status) || this.status;
+		}
+		return job;
+	};
+	updateJob: JobRU['updateJob'] = async ({ id, data } = { id: this.id, data: null }) => {
 		if (!this.sumJobRU) {
 			this.error('No status changer specified');
 			throw Error('No status changer specified');
 		}
 		return await this.sumJobRU.updateJob({ id, data });
-	}
+	};
 
 	/**
 	 * Changes the status of the job being processed. Returns
@@ -186,8 +194,8 @@ export class Summarizer extends Logger {
 		}
 	}
 
-	setSummarizer(sumSummarizer: SumSummarizer) {
-		this.sumSummarizer = sumSummarizer;
+	setSummarize(sumSummarize: SumSummarize) {
+		this.sumSummarize = sumSummarize;
 	}
 
 	/**
@@ -195,13 +203,14 @@ export class Summarizer extends Logger {
 	 * @param parsedHtml
 	 * @returns {Promise<ReturnStructure>}
 	 */
-	async summarizer(parsedHtml?: string): Promise<ReturnStructure> {
-		if (this.parsedHtml) return { success: true, error: null, data: { output: this.parsedHtml } };
-		if (!this.sumSummarizer) {
-			this.error('No parser specified');
-			throw Error('No parser specified');
+	async summarize(parsedHtml?: string): Promise<ReturnStructure> {
+		if (this.summary) return { success: true, error: null, data: { output: this.summary } };
+		if (!this.sumSummarize) {
+			this.error('No summarizer specified');
+			throw Error('No summarizer specified');
 		}
-		const result = await this.sumSummarizer.summarize(parsedHtml || this.parsedHtml);
+
+		const result = await this.sumSummarize.summarize(parsedHtml || this.parsedHtml);
 		if (result.success) {
 			this.summary = result.data.output;
 			return result;
