@@ -35,8 +35,6 @@ const auth = app.use('/*', async (c, next) => {
 	if (!parsedToken.data) return c.json(parsedToken.error, StatusCodes.BAD_REQUEST);
 	if (parsedToken.data.token !== c.env.TOKEN) return c.json({ message: StatusPhrases.UNAUTHORIZED }, StatusCodes.UNAUTHORIZED);
 
-	console.log('hey', c.req.path);
-
 	await next();
 });
 
