@@ -36,6 +36,8 @@ const route = createRoute({
 const executejob = app.openapi(route, async (c) => {
 	const { id } = c.req.valid('param');
 
+	const promisesToWait: Promise<unknown>[] = [];
+
 	const executeJob = new Summarizer({ url: '', id, bindings: c.env });
 	if (!executeJob.options) return c.json({ message: StatusPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
 
@@ -43,65 +45,56 @@ const executejob = app.openapi(route, async (c) => {
 	executeJob.setJobRU(JobReadUpdate);
 	const jobData = await executeJob.readJob({});
 	if (!jobData.success) {
-		executeJob.error('Unable to pull job details', jobData.error);
-		throw Error('No bindings specified');
+		return await executeJob.failStep({ message: 'Failed to open jobs database', code: 6 }, [], [], async (error) => c.json({ message: error.message }, 500));
 	}
 
 	const StatusUpdate = new ChangeStatusDependency(executeJob.options);
 	executeJob.setStatusChanger(StatusUpdate);
-	const processingStatus = executeJob.setStatus('processing');
-	const updatedJobStarted = executeJob.updateJob({ id, data: { started: new Date().getTime() } });
+	promisesToWait.push(executeJob.setStatus('processing'));
+	promisesToWait.push(executeJob.updateJob({ id, data: { started: new Date().getTime() } }));
 
 	const BrowserFetcher = new BrowserRendererDependency(executeJob.options);
 	executeJob.setFetcher(BrowserFetcher);
 	const fetchStep = await executeJob.fetch();
-	if (!fetchStep.success) {
-		executeJob.error('Unable to fetch html from url', executeJob.url);
-		await Promise.all([processingStatus, updatedJobStarted]);
-		executeJob.setStatus('failed', { message: 'Unable to fetch html from url', code: 4 });
-		throw Error('Unable to fetch html from url');
-	}
+	if (!fetchStep.success)
+		return await executeJob.failStep({ message: 'Unable to fetch rawHTML from URL', code: 7 }, [executeJob.url], promisesToWait, async (error) =>
+			c.json({ message: error.message }, 500),
+		);
 
 	const HTMLParser = new ParserDependency(executeJob.options);
 	executeJob.setParser(HTMLParser);
 	const parsedHtml = await executeJob.parse();
-	if (!parsedHtml.success) {
-		executeJob.error('Unable parse html from rawHtml', executeJob.url);
-		await Promise.all([processingStatus, updatedJobStarted]);
-		executeJob.setStatus('failed', { message: 'Unable parse html from rawHtml', code: 4 });
-		throw Error('Unable parse html from rawHtml');
-	}
+	if (!parsedHtml.success)
+		return await executeJob.failStep({ message: 'Unable to parseHTML from rawHTML', code: 8 }, [executeJob.url], promisesToWait, async (error) =>
+			c.json({ message: error.message }, 500),
+		);
 
 	const LLMSummarizer = new SummarizeDependency(executeJob.options);
 	executeJob.setSummarize(LLMSummarizer);
 
 	const summarizedPage = await executeJob.summarize();
-	if (!summarizedPage.success) {
-		executeJob.error('Unable to get summary of parsed html', executeJob.url);
-		await Promise.all([processingStatus, updatedJobStarted]);
-		executeJob.setStatus('failed', { message: 'Unable parse html from rawHtml', code: 4 });
-		throw Error('Unable parse html from rawHtml');
-	}
+	if (!summarizedPage.success)
+		return await executeJob.failStep({ message: 'Unable to get summary from LLM from parseHTML', code: 9 }, [executeJob.url], promisesToWait, async (error) =>
+			c.json({ message: error.message }, 500),
+		);
 
 	const updatedJob = await executeJob.updateJob({
 		id,
 		data: {
-			summary: summarizedPage.data.output,
+			summary: executeJob.summary,
 			finished: new Date().getTime(),
 		},
 	});
 
-	if (!updatedJob.success) {
-		executeJob.error('Failed to update job in database', executeJob.url);
-		await Promise.all([processingStatus, updatedJobStarted]);
-		executeJob.setStatus('failed', { message: 'Failed to update job in database', code: 4 });
-		throw Error('Failed to update job in database');
-	}
+	if (!updatedJob.success)
+		return await executeJob.failStep({ message: 'Unable to update job in database', code: 10 }, [executeJob.url, id], promisesToWait, async (error) =>
+			c.json({ message: error.message }, 500),
+		);
 
-	await Promise.all([processingStatus]);
-	executeJob.setStatus('completed');
+	await Promise.all(promisesToWait);
+	await executeJob.setStatus('completed');
 
-	return c.json({ id: 1, url: '', status: '', summary: summarizedPage.data.output, timestamp: 1 }, StatusCodes.OK);
+	return c.json({ id, url: '', status: '', summary: summarizedPage.data?.output, timestamp: 1 }, StatusCodes.OK);
 });
 
 export default executejob;

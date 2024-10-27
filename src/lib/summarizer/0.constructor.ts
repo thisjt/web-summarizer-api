@@ -219,4 +219,16 @@ export class Summarizer extends Logger {
 			throw Error('Failed to summarize url ' + this.url);
 		}
 	}
+
+	async failStep<T>(
+		error: { message: string; code: number },
+		consoleErrorParams: unknown[],
+		promisesToWait: Promise<unknown>[],
+		callback: (error: { message: string; code: number }) => Promise<T>,
+	): Promise<T> {
+		this.error(error.message, error.code, ...consoleErrorParams);
+		await Promise.all(promisesToWait);
+		this.setStatus('failed', error);
+		return await callback(error);
+	}
 }
